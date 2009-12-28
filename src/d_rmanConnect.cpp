@@ -1,6 +1,5 @@
 #include "Client.h"
 #include "Data.h"
-#include "ImageDesc.h"
 
 #include <ndspy.h>
 

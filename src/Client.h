@@ -1,7 +1,6 @@
 #ifndef RMAN_CONNECT_CLIENT_H_
 #define RMAN_CONNECT_CLIENT_H_
 
-#include "ImageDesc.h"
 #include "Data.h"
 #include <boost/asio.hpp>
 

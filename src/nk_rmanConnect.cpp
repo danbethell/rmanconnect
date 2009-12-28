@@ -47,13 +47,13 @@ class RmanBuffer
             _data.resize(_width * _height);
         }
 
-        rmanconnect::Colour& get(unsigned int x, unsigned int y)
+        RmanColour& get(unsigned int x, unsigned int y)
         {
             unsigned int index = (_width * y) + x;
             return _data[index];
         }
 
-        const rmanconnect::Colour& get(unsigned int x, unsigned int y) const
+        const RmanColour& get(unsigned int x, unsigned int y) const
         {
             unsigned int index = (_width * y) + x;
             return _data[index];
@@ -65,7 +65,7 @@ class RmanBuffer
         }
 
         // data
-        std::vector<rmanconnect::Colour> _data;
+        std::vector<RmanColour> _data;
         unsigned int _width;
         unsigned int _height;
 };
@@ -302,7 +302,7 @@ static void rmanConnectListen(unsigned index, unsigned nthreads, void* data)
                 for (_x = 0; _x < d.width(); ++_x)
                     for (_y = 0; _y < d.height(); ++_y)
                     {
-                        rmanconnect::Colour &pix = node->m_buffer.get(_x
+                        RmanColour &pix = node->m_buffer.get(_x
                                 + d.x(), _h - (_y + d.y() + 1));
                         offset = (d.width() * _y * d.spp()) + (_x * d.spp());
                         pix.r = pixel_data[offset + 0];

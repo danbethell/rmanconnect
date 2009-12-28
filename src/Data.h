@@ -3,6 +3,13 @@
 
 namespace rmanconnect
 {
+    class ImageDesc
+    {
+        public:
+            int x, y;
+            unsigned int width, height, spp;
+    };
+
     class Data
     {
     friend class Client;
