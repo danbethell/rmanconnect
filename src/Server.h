@@ -22,7 +22,7 @@ namespace rmanconnect
         // tcp stuff
         boost::asio::io_service mIoService;
         boost::asio::ip::tcp::socket mSocket;
-        boost::asio::ip::tcp::acceptor* mpAcceptor;
+        boost::asio::ip::tcp::acceptor mAcceptor;
     };
 }
 

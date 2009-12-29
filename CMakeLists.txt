@@ -24,6 +24,7 @@ add_library( nuke_plugin
   SHARED 
   ${CMAKE_SOURCE_DIR}/src/nk_rmanConnect.cpp 
   ${CMAKE_SOURCE_DIR}/src/Server.cpp
+  ${CMAKE_SOURCE_DIR}/src/Client.cpp
   ${CMAKE_SOURCE_DIR}/src/Data.cpp
   )
 

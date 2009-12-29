@@ -1,4 +1,5 @@
 #include "Server.h"
+#include "Client.h"
 #include <boost/lexical_cast.hpp>
 #include <vector>
 #include <iostream>
@@ -9,30 +10,27 @@ using boost::asio::ip::tcp;
 Server::Server( int port ) :
         mPort( port ),
         mSocket( mIoService ),
-        mpAcceptor( 0 )
+        mAcceptor( mIoService, tcp::endpoint(boost::asio::ip::tcp::v4(), port) )
 {
-    reconnect(port);
 }
 
 Server::~Server()
 {
-    mpAcceptor->close();
-    delete mpAcceptor;
-    mpAcceptor = 0;
 }
 
 void Server::reconnect( int port )
 {
-    if ( mpAcceptor )
-        mpAcceptor->close();
-    delete mpAcceptor;
-    mpAcceptor = 0;
-    mpAcceptor = new tcp::acceptor( mIoService, tcp::endpoint(boost::asio::ip::tcp::v4(), port) );
+}
+
+void Server::quit( int port )
+{
+    rmanconnect::Client client(mPort);
+    client.quit();
 }
 
 Data Server::listen()
 {
-    mpAcceptor->accept(mSocket);
+    mAcceptor.accept(mSocket);
 
     Data d;
     try
@@ -80,7 +78,6 @@ Data Server::listen()
                 float* pixel_data = new float[num_samples];
                 boost::asio::read( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&pixel_data[0]), sizeof(float)*num_samples ) ) ;
                 d.mpData = pixel_data;
-                d.mObjectOwnsData = false;
 
                 break;
             }
@@ -89,6 +86,11 @@ Data Server::listen()
                 int image_id;
                 d.mType = key;
                 boost::asio::read( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&image_id), sizeof(int)) );
+                break;
+            }
+            case 9: // quit
+            {
+                d.mType = 9;
                 break;
             }
         }

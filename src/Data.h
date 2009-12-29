@@ -3,25 +3,17 @@
 
 namespace rmanconnect
 {
-    class ImageDesc
-    {
-        public:
-            int x, y;
-            unsigned int width, height, spp;
-    };
-
     class Data
     {
     friend class Client;
     friend class Server;
     public:
-        Data();
-        Data( int x, int y, 
-              int width, int height, 
-              int spp, const float *data=0, bool auto_cleanup=false );
+        Data( int x=0, int y=0,
+              int width=0, int height=0,
+              int spp=0, const float *data=0 );
         ~Data();
         
-        int type(){ return mType; } // 0: open, 1: data, 2:close
+        int type(){ return mType; }
         int x(){ return mX; }
         int y(){ return mY; }
         int width(){ return mWidth; }
@@ -30,20 +22,21 @@ namespace rmanconnect
         const float *data(){ return mpData; }
 
     private:
+        // what type of data is this?
+        // 0: open image
+        // 1: image data
+        // 2: close image
+        // 9: quit listening loop
+        int mType;
+
         // x & y position
         int mX, mY; 
         
         // width, height, num channels (samples)
-        unsigned int mWidth, mHeight, mSpp; 
-
-        // do we cleanup data automatically?
-        bool mObjectOwnsData;
+        unsigned int mWidth, mHeight, mSpp;
 
         // our pixel data, interleaved
         float *mpData; 
-
-        // what type of data is this?
-        int mType;
     };
 }
 

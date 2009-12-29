@@ -10,15 +10,16 @@ namespace rmanconnect
     {
     public:
         // startup client & test connection
-        Client( int port=9201 );
+        Client( int port );
         
         // shutdown client
         ~Client();
         
         // send data to the server
-        void openImage( ImageDesc &img );
+        void openImage( Data &header );
         void send( Data &data );
         void closeImage();
+        void quit();
         
     private:
         void connect( int port );

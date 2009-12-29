@@ -23,7 +23,7 @@ FrameBegin 1
   Hider "hidden" 
     "string depthfilter" [ "min" ] 
     "integer jitter" [ 1 ] 
-  Display "" "idisplay" "rgba" 
+  Display "" "RmanConnect" "rgba" 
     "float[2] exposure" [ 1 1 ] 
     "float[4] quantize" [ 0 0 0 0 ] 
     "float dither" [ 0.5 ] 
@@ -32,7 +32,13 @@ FrameBegin 1
     "integer matte" [ 1 ] 
     "integer exclusive" [ 0 ] 
     "integer associatealpha" [ 1 ] 
-  Format 640 480 0.9999975 
+    "integer port" [ 9201 ]
+  Display "+" "RmanConnect" "point __Pworld" 
+    "float[4] quantize" [ 0 0 0 0 ] 
+    "string filter" [ "gaussian" ] 
+    "float[2] filterwidth" [ 2 2 ] 
+    "integer port" [ 9202 ]
+  Format 1024 778 0.9999975 
   Clipping 0.1 1e3 
   Shutter 1 1 
   Option "shutter" "float[2] efficiency" [ 1 1 ] 

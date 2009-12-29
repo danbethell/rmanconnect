@@ -40,7 +40,7 @@ Client::~Client()
     disconnect();
 }
 
-void Client::openImage( ImageDesc &img )
+void Client::openImage( Data &header )
 {
     // connect to port
     connect(mPort);
@@ -53,8 +53,8 @@ void Client::openImage( ImageDesc &img )
     boost::asio::read( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&mImageId), sizeof(int)) );
 
     // send our width & height
-    boost::asio::write( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&img.width), sizeof(int)) );
-    boost::asio::write( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&img.height), sizeof(int)) );
+    boost::asio::write( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&header.mWidth), sizeof(int)) );
+    boost::asio::write( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&header.mHeight), sizeof(int)) );
 
     // disconnect
     disconnect();
@@ -100,5 +100,13 @@ void Client::closeImage( )
     boost::asio::write( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&mImageId), sizeof(int)) );
 
     // disconnect
+    disconnect();
+}
+
+void Client::quit()
+{
+    connect(mPort);
+    int key = 9;
+    boost::asio::write( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&key), sizeof(int)) );
     disconnect();
 }

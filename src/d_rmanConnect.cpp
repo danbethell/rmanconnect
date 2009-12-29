@@ -15,18 +15,17 @@ extern "C"
             int height, int paramCount, const UserParameter *parameters,
             int formatCount, PtDspyDevFormat *format, PtFlagStuff *flagstuff)
     {
-        std::cerr << "display open" << std::endl;
+        // get our server port from the 'port' display parameter
+        int port_address = 9201;
+        DspyFindIntInParamList( "port", &port_address, paramCount, parameters );
+
         try
         {
             // create a new rmanConnect object
-            rmanconnect::Client *client = new rmanconnect::Client();
+            rmanconnect::Client *client = new rmanconnect::Client( port_address );
 
             // make image header & send to server
-            rmanconnect::ImageDesc header;
-            header.x = 0;
-            header.y = 0;
-            header.width = width;
-            header.height = height;
+            rmanconnect::Data header( 0, 0, width, height, formatCount );
             client->openImage( header );
 
             // create passable pointer for our client object
@@ -34,7 +33,8 @@ extern "C"
         }
         catch (const std::exception &e)
         {
-            DspyError("RmanConnect display driver", "%s\n", e.what());
+            DspyError("RmanConnect display driver", "%s", e.what());
+            DspyError("RmanConnect display driver", "Port 'localhost:%d'", port_address);
             return PkDspyErrorUndefined;
         }
 
@@ -70,8 +70,6 @@ extern "C"
     // close the display driver
     PtDspyError DspyImageClose(PtDspyImageHandle pvImage)
     {
-        std::cerr << "display close" << std::endl;
-
         try
         {
             rmanconnect::Client *client =
