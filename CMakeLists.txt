@@ -52,7 +52,7 @@ set_target_properties( rman_plugin
   PREFIX ""
   OUTPUT_NAME "d_rmanConnect"
   SUFFIX ".dpy"
-  COMPILE_FLAGS "-g"
+  COMPILE_FLAGS ""
 )
 
 target_link_libraries( rman_plugin

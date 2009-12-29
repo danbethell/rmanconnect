@@ -28,7 +28,7 @@ class RmanColour
         RmanColour()
         {
             r = g = b = a = 0.f;
-                }
+        }
 
         // data
         float r, g, b, a;
@@ -159,6 +159,9 @@ class RmanConnect: public Iop
 
         void _validate(bool for_real)
         {
+            // TODO: create a new format from our m_buffer->width & m_buffer->height
+            // and return that
+
             info_.full_size_format(*m_formats.fullSizeFormat());
             info_.format(*m_formats.format());
             info_.channels(Mask_RGBA);
@@ -324,6 +327,7 @@ static void rmanConnectListen(unsigned index, unsigned nthreads, void* data)
 
         // after the update set the last update time
         node->m_lastUpdate = static_cast<float> (time(NULL));
+        node->invalidate();
         node->asapUpdate();
     }
 }

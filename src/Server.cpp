@@ -58,7 +58,6 @@ Data Server::listen()
                 d.mType = key;
                 d.mWidth = width;
                 d.mHeight = height;
-                std::cerr << "received entire open packet" << std::endl;
                 break;
             }
             case 1: // image data
@@ -90,14 +89,12 @@ Data Server::listen()
                 int image_id;
                 d.mType = key;
                 boost::asio::read( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&image_id), sizeof(int)) );
-                std::cerr << "received entire closed packet" << std::endl;
                 break;
             }
         }
     }
     catch( ... )
     {
-        std::cerr << "boo" << std::endl;
     }
 
     mSocket.close();
