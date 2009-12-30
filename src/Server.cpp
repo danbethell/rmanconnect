@@ -3,26 +3,65 @@
 #include <boost/lexical_cast.hpp>
 #include <vector>
 #include <iostream>
+#include <OpenEXR/Iex.h>
 
 using namespace rmanconnect;
 using boost::asio::ip::tcp;
 
-Server::Server( int port ) :
-        mPort( port ),
+Server::Server() :
+        mPort(0),
         mSocket( mIoService ),
-        mAcceptor( mIoService, tcp::endpoint(boost::asio::ip::tcp::v4(), port) )
+        mpAcceptor(0)
 {
 }
 
 Server::~Server()
 {
+    delete mpAcceptor;
+    mpAcceptor = 0;
 }
 
-void Server::reconnect( int port )
+void Server::reconnect( int port, bool search )
 {
+    // disconnect if necessary
+    if ( mpAcceptor )
+    {
+        mpAcceptor->close();
+        delete mpAcceptor;
+        mpAcceptor = 0;
+    }
+
+    // reconnect at specified port
+    int start_port = port;
+    while (!mpAcceptor && port < start_port + 99)
+    {
+        try
+        {
+            mpAcceptor = new tcp::acceptor( mIoService, tcp::endpoint(boost::asio::ip::tcp::v4(), port) );
+            mPort = port;
+        }
+        catch (...)
+        {
+            mpAcceptor = 0;
+            if (!search)
+                break;
+            else
+                port++;
+        }
+    }
+
+    // handle failed connection
+    if ( !mpAcceptor )
+    {
+        char buffer[32];
+        sprintf(buffer, "port: %d", start_port);
+        if (search)
+            sprintf(buffer, "port: %d-%d", start_port, start_port + 99);
+        THROW( Iex::BaseExc, "Failed to connect to port " << buffer );
+    }
 }
 
-void Server::quit( int port )
+void Server::quit()
 {
     rmanconnect::Client client(mPort);
     client.quit();
@@ -30,7 +69,7 @@ void Server::quit( int port )
 
 Data Server::listen()
 {
-    mAcceptor.accept(mSocket);
+    mpAcceptor->accept(mSocket);
 
     Data d;
     try

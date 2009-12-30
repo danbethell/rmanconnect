@@ -1,6 +1,6 @@
 #include "Client.h"
 #include <boost/lexical_cast.hpp>
-#include <Iex.h>
+#include <OpenEXR/Iex.h>
 #include <iostream>
 
 using namespace rmanconnect;

@@ -6,6 +6,7 @@ static const char* const HELP =
 #include <stdio.h>
 #include <vector>
 #include <string>
+#include <sstream>
 
 #include "DDImage/Iop.h"
 #include "DDImage/Row.h"
@@ -20,6 +21,9 @@ using namespace DD::Image;
 
 #include "Data.h"
 #include "Server.h"
+
+// our default port
+const int rmanconnect_default_port = 9201;
 
 // our listener method
 static void rmanConnectListen(unsigned index, unsigned nthreads, void* data);
@@ -91,23 +95,68 @@ class RmanBuffer
 class RmanConnect: public Iop
 {
     public:
-        FormatPair m_fmt;
+        FormatPair m_fmt; // our buffer format (knob)
+        int m_port; // the port we're listening on (knob)
+
         RmanBuffer m_buffer; // our pixel buffer
         Lock m_mutex; // mutex for locking the pixel buffer
         unsigned int hash_counter; // our refresh hash counter
-        rmanconnect::Server* mp_server; // our rmanconnect::Server
-        int m_port; // the port we're listening on
+        rmanconnect::Server m_server; // our rmanconnect::Server
+        bool m_inError; // some error handling
+        std::string m_connectionError;
+        bool m_legit;
 
         RmanConnect(Node* node) :
-            Iop(node), m_port(9201), mp_server(0)
+            Iop(node),
+            m_port(rmanconnect_default_port),
+            m_inError(false),
+            m_connectionError(""),
+            m_legit(false)
         {
             inputs(0);
+        }
 
-            // setup our tcp listener
-            startServer(m_port);
+        // Apparently nodes get copied/constructed upon asapUpdate() and this causes a few
+        // problems - we don't want new sockets getting opened etc.
+        // Fortunately attach() only gets called for nodes in the dag so we can
+        // use this to mark the DAG node as 'legit' and open the port accordingly.
+        void attach()
+        {
+            m_legit = true;
+        }
 
-            // spawn the listening thread on node creation
-            Thread::spawn(::rmanConnectListen, 1, this);
+        // we can use this to change our tcp port
+        void changePort( int port )
+        {
+            m_inError = false;
+            m_connectionError = "";
+
+            if ( m_server.isConnected() )
+            {
+                m_server.quit();
+                Thread::wait(this);
+            }
+
+            // try to reconnect
+            try
+            {
+                m_server.reconnect( m_port );
+            }
+            catch ( ... )
+            {
+                std::stringstream ss;
+                ss << "Could not connect to port: " << port;
+                m_connectionError = ss.str();
+                m_inError = true;
+                return;
+            }
+
+            // success
+            if ( m_server.isConnected() )
+            {
+                Thread::spawn(::rmanConnectListen, 1, this);
+                std::cout << "Connected to port: " << m_server.getPort() << std::endl;
+            }
         }
 
         // Destroying the Op should get rid of the parallel threads.
@@ -116,52 +165,10 @@ class RmanConnect: public Iop
         // in an upcoming version, so you should implement this:
         ~RmanConnect()
         {
-            mp_server->quit(m_port);
-            Thread::wait(this);
-            delete mp_server;
-        }
-
-        void startServer(int port, bool search = true)
-        {
-            int start_port = port;
-            if (!mp_server)
+            if ( m_server.isConnected() )
             {
-                // try and find an open port
-                while (!mp_server && port < start_port + 99)
-                {
-                    try
-                    {
-                        mp_server = new rmanconnect::Server(port);
-                        std::cerr << "Opened RmanConnect at localhost:"
-                                << port << std::endl;
-                        m_port = port;
-                        break;
-                    }
-                    catch (...)
-                    {
-                        mp_server = 0;
-                        if (!search)
-                            break;
-                        else
-                            port++;
-                    }
-                }
-            }
-            else
-            {
-                mp_server->reconnect(port);
-                std::cerr << "Opened rmanconnect server at port " << port
-                        << std::endl;
-            }
-
-            if (!mp_server)
-            {
-                m_port = -1;
-                char buffer[32];
-                sprintf(buffer, "port: %d", start_port);
-                if (search)
-                    sprintf(buffer, "port: %d-%d", start_port, start_port + 99);
-                error("%s %s", "Could not open port for rmanconnect!", buffer);
+                m_server.quit();
+                Thread::wait(this);
             }
         }
 
@@ -170,29 +177,31 @@ class RmanConnect: public Iop
         // use the current time or something.
         void append(Hash& hash)
         {
-            hash.append(hash_counter);
+            hash.append(hash_counter++);
         }
 
         void _validate(bool for_real)
         {
+            // do we need to open a port?
+            if ( m_server.isConnected()==false && !m_inError && m_legit )
+            {
+                std::cerr << "Change Port: " << m_port << std::endl;
+                changePort(m_port);
+            }
+
+            // handle any connection error
+            if ( m_inError )
+                error(m_connectionError.c_str());
+
+            // setup format etc
             info_.format(*m_fmt.fullSizeFormat());
             info_.full_size_format(*m_fmt.format());
             info_.channels(Mask_RGBA);
             info_.set(info().format());
         }
 
-/*
-        void _request(int x, int y, int r, int t, ChannelMask channels,
-                int count)
-        {
-            input0().validate();
-        }
-*/
-
         void engine(int y, int xx, int r, ChannelMask channels, Row& out)
         {
-            validate(false);
-
             float *rOut = out.writable(Chan_Red) + xx;
             float *gOut = out.writable(Chan_Green) + xx;
             float *bOut = out.writable(Chan_Blue) + xx;
@@ -249,7 +258,7 @@ class RmanConnect: public Iop
         {
             if (knob->name() && strcmp(knob->name(), "port_number") == 0)
             {
-                //resetServer( m_port, false );
+                changePort(m_port);
                 return 1;
             }
             return 0;
@@ -269,17 +278,16 @@ static void rmanConnectListen(unsigned index, unsigned nthreads, void* data)
     bool killThread = false;
 
     RmanConnect * node = reinterpret_cast<RmanConnect*> (data);
-    if (!node->mp_server)
+    if (!node->m_server.isConnected())
     {
         std::cerr << "Could not find opened RmanConnect port!" << std::endl;
-        node->m_port = -1;
         return;
     }
 
     while (!killThread)
     {
         // block here until we get some data
-        rmanconnect::Data d = node->mp_server->listen();
+        rmanconnect::Data d = node->m_server.listen();
 
         // handle the data we received
         switch (d.type())

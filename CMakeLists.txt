@@ -3,7 +3,6 @@ project( rmanconnect )
 
 set( NDKDIR "/usr/local/Nuke5.2v3" )
 set( DELIGHT "/usr/local/3delight-9.0.0/Linux-x86_64" )
-set( ILMBASE "/usr/include/OpenEXR" )
 
 find_package( Boost 1.40.0 COMPONENTS system REQUIRED )
 
@@ -11,7 +10,6 @@ include_directories(
   ${CMAKE_SOURCE_DIR}/src
   ${NDKDIR}/include
   ${DELIGHT}/include
-  ${ILMBASE}
   ${Boost_INCLUDE_DIRS}
   )
 

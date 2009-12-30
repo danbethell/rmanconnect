@@ -9,20 +9,24 @@ namespace rmanconnect
     class Server
     {
     public:
-        Server( int port ); // start up the listening server
+        Server(); // start up the listening server
         ~Server(); // shutdown the server
         
-        void reconnect( int port );
+        void reconnect( int port, bool seach=false );
         Data listen();
-        void quit(int port);
+        void quit();
+
+        int getPort(){ return mPort; }
+        bool isConnected(){ return ( mpAcceptor!=0 ); }
 
     private:
-        int mPort; // the port we should listen to
+
+        int mPort; // the port we're listening to
 
         // tcp stuff
         boost::asio::io_service mIoService;
         boost::asio::ip::tcp::socket mSocket;
-        boost::asio::ip::tcp::acceptor mAcceptor;
+        boost::asio::ip::tcp::acceptor* mpAcceptor;
     };
 }
 
