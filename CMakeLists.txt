@@ -1,23 +1,37 @@
+#==========
+#
+# Copyright (c) 2010, Dan Bethell, Johannes Saam.
+# All rights reserved.
+#
+# For license information regarding redistribution and
+# use, please refer to the COPYING file.
+#
+#==========
+
 cmake_minimum_required( VERSION 2.6 )
 project( rmanconnect )
 
-set( NDKDIR "/usr/local/Nuke5.2v3" )
-set( DELIGHT "/usr/local/3delight-9.0.0/Linux-x86_64" )
-
+#=====
+# General
+set( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/config/cmake )
 find_package( Boost 1.40.0 COMPONENTS system REQUIRED )
+find_package( Nuke REQUIRED )
+find_package( 3Delight REQUIRED )
+find_package( Doxygen )
 
 include_directories( 
   ${CMAKE_SOURCE_DIR}/src
-  ${NDKDIR}/include
-  ${DELIGHT}/include
   ${Boost_INCLUDE_DIRS}
+  ${Nuke_INCLUDE_DIR}
+  ${3Delight_INCLUDE_DIR}
   )
 
 link_directories( 
-  ${NDKDIR} 
-  ${DELIGHT}/lib
+  ${Nuke_LIBRARY_DIR} # we add this so we can find Nuke's Iex lib
   )
 
+#=====
+# Build the Nuke plugin
 add_library( nuke_plugin 
   SHARED 
   ${CMAKE_SOURCE_DIR}/src/nk_rmanConnect.cpp 
@@ -34,11 +48,13 @@ set_target_properties( nuke_plugin
   )
 
 target_link_libraries( nuke_plugin 
-  DDImage
-  Iex
   ${Boost_LIBRARIES}
+  ${Nuke_LIBRARIES}
+  Iex
   )
 
+#=====
+# Build the Rman plugin
 add_library( rman_plugin
   SHARED
   ${CMAKE_SOURCE_DIR}/src/d_rmanConnect.cpp
@@ -55,7 +71,18 @@ set_target_properties( rman_plugin
 )
 
 target_link_libraries( rman_plugin
-  3delight
-  Iex
   ${Boost_LIBRARIES}
+  ${3Delight_LIBRARIES}
+  Iex
   )
+
+#=====
+# Build docs (after the nuke plugin is built)
+IF( DOXYGEN_FOUND )
+    ADD_CUSTOM_COMMAND( TARGET nuke_plugin
+        POST_BUILD
+        COMMAND ${DOXYGEN_EXECUTABLE} 
+        ${CMAKE_SOURCE_DIR}/"config/docs/doxygen.cfg" 
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    )
+ENDIF( DOXYGEN_FOUND )

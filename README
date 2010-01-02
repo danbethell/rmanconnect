@@ -1,6 +1,13 @@
-This is a display driver and plugin for rendering directly into Nuke.
+RmanConnect
+===========
+This is a RenderMan Interface-compatible display driver and accompanying plugin 
+for rendering directly into Nuke.
 
-The code is eleased under the New BSD license. See the COPYING file for more details.
+RenderMan® is a registered trademark of Pixar.
+Nuke® is a registered trademark of The Foundry.
 
+The code is released under the Revised BSD license. See the COPYING file for 
+more details.
+--
 Dan Bethell
 Johannes Saam
