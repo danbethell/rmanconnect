@@ -146,13 +146,36 @@ class RmanConnect: public Iop
             inputs(0);
         }
 
-        // Apparently nodes get copied/constructed upon asapUpdate() and this causes a few
+        // Destroying the Op should get rid of the parallel threads.
+        // Unfortunatly currently Nuke does not destroy one of the Ops on a
+        // deleted node, as it is saving it for Undo. This bug will be fixed
+        // in an upcoming version, so you should implement this:
+        ~RmanConnect()
+        {
+            if ( m_server.isConnected() )
+            {
+                m_server.quit();
+                Thread::wait(this);
+            }
+        }
+
+        // It seems additional instances of a node get copied/constructed upon 
+        // very frequent calls to asapUpdate() and this causes us a few
         // problems - we don't want new sockets getting opened etc.
         // Fortunately attach() only gets called for nodes in the dag so we can
         // use this to mark the DAG node as 'legit' and open the port accordingly.
         void attach()
         {
             m_legit = true;
+        }
+
+        void flagForUpdate()
+        {
+            if ( hash_counter==UINT_MAX )
+                hash_counter=0;
+            else
+                hash_counter++;
+            asapUpdate();
         }
 
         // we can use this to change our tcp port
@@ -189,35 +212,19 @@ class RmanConnect: public Iop
             }
         }
 
-        // Destroying the Op should get rid of the parallel threads.
-        // Unfortunatly currently Nuke does not destroy one of the Ops on a
-        // deleted node, as it is saving it for Undo. This bug will be fixed
-        // in an upcoming version, so you should implement this:
-        ~RmanConnect()
-        {
-            if ( m_server.isConnected() )
-            {
-                m_server.quit();
-                Thread::wait(this);
-            }
-        }
-
         // The hash value must change or Nuke will think the picture is the
         // same. If you can't determine some id for the picture, you should
         // use the current time or something.
         void append(Hash& hash)
         {
-            hash.append(hash_counter++);
+            hash.append(hash_counter);
         }
 
         void _validate(bool for_real)
         {
             // do we need to open a port?
             if ( m_server.isConnected()==false && !m_inError && m_legit )
-            {
-                std::cerr << "Change Port: " << m_port << std::endl;
                 changePort(m_port);
-            }
 
             // handle any connection error
             if ( m_inError )
@@ -308,12 +315,6 @@ static void rmanConnectListen(unsigned index, unsigned nthreads, void* data)
     bool killThread = false;
 
     RmanConnect * node = reinterpret_cast<RmanConnect*> (data);
-    if (!node->m_server.isConnected())
-    {
-        std::cerr << "Could not find opened RmanConnect port!" << std::endl;
-        return;
-    }
-
     while (!killThread)
     {
         // block here until we get some data
@@ -363,11 +364,15 @@ static void rmanConnectListen(unsigned index, unsigned nthreads, void* data)
 
                 // release buffer
                 node->m_mutex.unlock();
+
+                // update the image
+                node->flagForUpdate();
                 break;
             }
             case 2: // close image
             {
-                // do nothing
+                // update the image
+                node->flagForUpdate();
                 break;
             }
             case 9: // this is sent when the parent process want to kill
@@ -377,13 +382,7 @@ static void rmanConnectListen(unsigned index, unsigned nthreads, void* data)
                 break;
             }
         }
-
-        // increment our hash_counter
-        if ( node->hash_counter==UINT_MAX )
-            node->hash_counter=0;
-        else
-            node->hash_counter++;
-        node->asapUpdate();
+        
     }
 }
 
