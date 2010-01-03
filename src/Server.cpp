@@ -101,7 +101,8 @@ void Server::connect( int port, bool search )
 
 void Server::quit()
 {
-    rmanconnect::Client client(mPort);
+    std::string hostname("localhost");
+    rmanconnect::Client client(hostname, mPort);
     client.quit();
 }
 

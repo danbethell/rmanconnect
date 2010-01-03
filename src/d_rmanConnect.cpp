@@ -45,6 +45,14 @@ extern "C"
             int height, int paramCount, const UserParameter *parameters,
             int formatCount, PtDspyDevFormat *format, PtFlagStuff *flagstuff)
     {
+        // get our server hostname from the 'host' or 'hostname' display parameter
+        std::string hostname("localhost");
+        char *host_tmp = 0;
+        DspyFindStringInParamList( "host", &host_tmp, paramCount, parameters );
+        DspyFindStringInParamList( "hostname", &host_tmp, paramCount, parameters );
+        if ( host_tmp )
+            hostname = std::string(host_tmp);
+
         // get our server port from the 'port' display parameter
         int port_address = 9201;
         DspyFindIntInParamList( "port", &port_address, paramCount, parameters );
@@ -52,7 +60,7 @@ extern "C"
         try
         {
             // create a new rmanConnect object
-            rmanconnect::Client *client = new rmanconnect::Client( port_address );
+            rmanconnect::Client *client = new rmanconnect::Client( hostname, port_address );
 
             // make image header & send to server
             rmanconnect::Data header( 0, 0, width, height, formatCount );
@@ -64,7 +72,7 @@ extern "C"
         catch (const std::exception &e)
         {
             DspyError("RmanConnect display driver", "%s", e.what());
-            DspyError("RmanConnect display driver", "Port 'localhost:%d'", port_address);
+            DspyError("RmanConnect display driver", "Port '%s:%d'", hostname.c_str(), port_address);
             return PkDspyErrorUndefined;
         }
 

@@ -29,13 +29,15 @@ FrameBegin 1
     "float[4] quantize" [ 0 0 0 0 ]
     "string filter" [ "gaussian" ] 
     "float[2] filterwidth" [ 2 2 ]
+    "string hostname" [ "localhost" ]
     "integer port" [ 9201 ]
   
   # Render the __Pworld AOV to port 9202
   Display "+" "RmanConnect" "point __Pworld" 
     "float[4] quantize" [ 0 0 0 0 ] 
     "string filter" [ "gaussian" ] 
-    "float[2] filterwidth" [ 2 2 ] 
+    "float[2] filterwidth" [ 2 2 ]
+    "string hostname" [ "localhost" ] 
     "integer port" [ 9202 ]
   
   # Render the __Nworld AOV to port 9203
@@ -43,6 +45,7 @@ FrameBegin 1
     "float[4] quantize" [ 0 0 0 0 ] 
     "string filter" [ "gaussian" ] 
     "float[2] filterwidth" [ 2 2 ] 
+    "string hostname" [ "localhost" ]
     "integer port" [ 9203 ]
   
   Format 1024 778 0.9999975 
@@ -78,7 +81,7 @@ FrameBegin 1
       Sides 2 
       Surface "test_surface" 
         "uniform color Cd" [ 1 0.00516665 0 ] 
-        "uniform float Kd" [ 0.35 ] 
+        "uniform float Kd" [ .35 ] 
       Sphere 1 -1 1 360
     AttributeEnd
 

@@ -36,18 +36,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using namespace rmanconnect;
 using boost::asio::ip::tcp;
 
-Client::Client( int port ) :
+Client::Client( std::string hostname, int port ) :
+        mHost( hostname ),
         mPort( port ),
         mImageId( -1 ),
         mSocket( mIoService )
 {
 }
 
-void Client::connect( int port )
+void Client::connect( std::string hostname, int port )
 {
     bool result = true;
     tcp::resolver resolver(mIoService);
-    tcp::resolver::query query( "localhost", boost::lexical_cast<std::string>(port).c_str() );
+    tcp::resolver::query query( hostname.c_str(), boost::lexical_cast<std::string>(port).c_str() );
     tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
     tcp::resolver::iterator end;
     boost::system::error_code error = boost::asio::error::host_not_found;
@@ -73,7 +74,7 @@ Client::~Client()
 void Client::openImage( Data &header )
 {
     // connect to port
-    connect(mPort);
+    connect(mHost, mPort);
 
     // send image header message with image desc information
     int key = 0;
@@ -96,7 +97,7 @@ void Client::sendPixels( Data &data )
         THROW( Iex::BaseExc, "Could not send data - image id is not valid!" );
 
     // connect to port
-    connect(mPort);
+    connect(mHost, mPort);
 
     boost::system::error_code ignored_error;
     // send data for image_id
@@ -120,7 +121,7 @@ void Client::sendPixels( Data &data )
 void Client::closeImage( )
 {
     // connect to port
-    connect(mPort);
+    connect(mHost, mPort);
 
     // send image complete message for image_id
     int key = 2;
@@ -135,7 +136,7 @@ void Client::closeImage( )
 
 void Client::quit()
 {
-    connect(mPort);
+    connect(mHost, mPort);
     int key = 9;
     boost::asio::write( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&key), sizeof(int)) );
     disconnect();

@@ -33,6 +33,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Data.h"
 #include <boost/asio.hpp>
+#include <string>
 
 //! \namespace rmanconnect
 namespace rmanconnect
@@ -52,9 +53,9 @@ namespace rmanconnect
         /*! \brief Constructor
          *
          * Creates a new Client object and tell it to connect any messages to
-         * the specified port.
+         * the specified host/port.
          */
-        Client( int port );
+        Client( std::string hostname, int port );
 
         //! Destructor
         ~Client();
@@ -83,11 +84,12 @@ namespace rmanconnect
         void closeImage();
         
     private:
-        void connect( int port );
+        void connect( std::string host, int port );
         void disconnect();
         void quit();
 
         // store the port we should connect to
+        std::string mHost;
         int mPort, mImageId;
         bool mIsConnected;
 
