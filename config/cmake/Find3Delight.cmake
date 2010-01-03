@@ -11,7 +11,8 @@
 # Variables defined by this module:
 #   3Delight_FOUND    
 #   3Delight_INCLUDE_DIR
-#   Nuke_LIBRARIES
+#   3Delight_LIBRARIES
+#   3Delight_LIBRARY_DIR
 #
 # Usage: 
 #   FIND_PACKAGE( 3Delight )
@@ -39,6 +40,9 @@ FIND_LIBRARY( 3Delight_LIBRARIES 3delight
   $ENV{DELIGHT}/lib
   ${3Delight_INSTALL_PATH}/lib
   )
+
+# our library path
+GET_FILENAME_COMPONENT( 3Delight_LIBRARY_DIR ${3Delight_LIBRARIES} PATH )
 
 # did we find everything?
 SET( 3Delight_FOUND "NO" )

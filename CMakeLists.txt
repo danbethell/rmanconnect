@@ -19,7 +19,7 @@ find_package( Nuke REQUIRED )
 find_package( 3Delight REQUIRED )
 find_package( Doxygen )
 
-include_directories( 
+include_directories(
   ${CMAKE_SOURCE_DIR}/src
   ${Boost_INCLUDE_DIRS}
   ${Nuke_INCLUDE_DIR}

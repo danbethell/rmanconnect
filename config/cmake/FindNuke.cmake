@@ -35,16 +35,14 @@ FIND_PATH( Nuke_INCLUDE_DIR DDImage/Op.h
   ${Nuke_INSTALL_PATH}/include
   )
 
-# our library path
-FIND_PATH( Nuke_LIBRARY_DIR DDImage
+# our library
+FIND_LIBRARY( Nuke_LIBRARIES DDImage
   $ENV{NDK_PATH}
   ${Nuke_INSTALL_PATH}
-)
-
-# our library itself
-FIND_LIBRARY( Nuke_LIBRARIES DDImage
-  ${Nuke_LIBRARY_DIR}
   )
+
+# our library path
+GET_FILENAME_COMPONENT( Nuke_LIBRARY_DIR ${Nuke_LIBRARIES} PATH )
 
 # did we find everything?
 SET( Nuke_FOUND "NO" )

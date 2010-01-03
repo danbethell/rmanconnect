@@ -123,7 +123,7 @@ namespace rmanconnect
  * those are described <a href="annotated.html">here</a>.
  *
  * The code is freely available from http://github.com/danbethell/rmanconnect
- * and is released under the New BSD license. See \link COPYING \endlink
+ * and is released under the Revised BSD license. See \link COPYING \endlink
  * for more details.
  *
  * © Copyright 2010, Dan Bethell, Johannes Saam.
