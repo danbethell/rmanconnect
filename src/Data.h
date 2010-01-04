@@ -78,9 +78,9 @@ namespace rmanconnect
         int height() const { return mHeight; }
         //! Samples-per-pixel, aka channel depth
         int spp() const { return mSpp; }
-        //! Pointer to the pixel data
+        //! Pointer to pixel data owned by the display driver (client-side)
         const float *data() const { return mpData; }
-        //! Pointer to pixels allocated by this object
+        //! Pointer to pixel data owned by this object (server-side)
         const float *pixels() const { return &mPixelStore[0]; }
 
     private:
