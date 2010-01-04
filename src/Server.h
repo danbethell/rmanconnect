@@ -224,7 +224,7 @@ namespace rmanconnect
  *
  * \section authors Authors
  * <ul><li>Dan Bethell (danbethell at gmail dot com)</li>
- * <li>Johannes Saam (johannessaam at googlemail dot com)</li></ul>
+ * <li>Johannes Saam (johannes dot saam at googlemail dot com)</li></ul>
  */
 
 /*! \page COPYING
