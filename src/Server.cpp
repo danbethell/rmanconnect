@@ -41,46 +41,46 @@ using boost::asio::ip::tcp;
 Server::Server() :
         mPort(0),
         mSocket( mIoService ),
-        mpAcceptor(0)
+        mAcceptor( mIoService )
 {
 }
 
 Server::Server( int port ) :
         mPort(0),
         mSocket( mIoService ),
-        mpAcceptor(0)
+        mAcceptor( mIoService )
 {
     connect( port );
 }
 
 Server::~Server()
 {
-    delete mpAcceptor;
-    mpAcceptor = 0;
+    if ( mAcceptor.is_open() )
+        mAcceptor.close();
 }
 
 void Server::connect( int port, bool search )
 {
     // disconnect if necessary
-    if ( mpAcceptor )
-    {
-        mpAcceptor->close();
-        delete mpAcceptor;
-        mpAcceptor = 0;
-    }
+    if ( mAcceptor.is_open() )
+        mAcceptor.close();
 
     // reconnect at specified port
     int start_port = port;
-    while (!mpAcceptor && port < start_port + 99)
+    while (!mAcceptor.is_open() && port < start_port + 99)
     {
         try
         {
-            mpAcceptor = new tcp::acceptor( mIoService, tcp::endpoint(boost::asio::ip::tcp::v4(), port) );
+            tcp::endpoint endpoint( boost::asio::ip::tcp::v4(), port );
+            mAcceptor.open(endpoint.protocol());
+            mAcceptor.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
+            mAcceptor.bind(endpoint);
+            mAcceptor.listen();
             mPort = port;
         }
         catch (...)
         {
-            mpAcceptor = 0;
+            mAcceptor.close();
             if (!search)
                 break;
             else
@@ -89,7 +89,7 @@ void Server::connect( int port, bool search )
     }
 
     // handle failed connection
-    if ( !mpAcceptor )
+    if ( !mAcceptor.is_open() )
     {
         char buffer[32];
         sprintf(buffer, "port: %d", start_port);
@@ -108,7 +108,7 @@ void Server::quit()
 
 Data Server::listen()
 {
-    mpAcceptor->accept(mSocket);
+    mAcceptor.accept(mSocket);
 
     Data d;
     try
@@ -169,6 +169,7 @@ Data Server::listen()
             case 9: // quit
             {
                 d.mType = 9;
+                mAcceptor.close();
                 break;
             }
         }

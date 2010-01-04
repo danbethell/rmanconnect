@@ -152,11 +152,7 @@ class RmanConnect: public Iop
         // in an upcoming version, so you should implement this:
         ~RmanConnect()
         {
-            if ( m_server.isConnected() )
-            {
-                m_server.quit();
-                Thread::wait(this);
-            }
+            disconnect();
         }
 
         // It seems additional instances of a node get copied/constructed upon 
@@ -167,6 +163,15 @@ class RmanConnect: public Iop
         void attach()
         {
             m_legit = true;
+        }
+
+        void detach()
+        {
+            // even though a node still exists once removed from a scene (in the
+            // undo stack) we should close the port and reopen if attach() gets
+            // called.
+            m_legit = false;
+            disconnect();
         }
 
         void flagForUpdate()
@@ -184,13 +189,8 @@ class RmanConnect: public Iop
             m_inError = false;
             m_connectionError = "";
 
-            if ( m_server.isConnected() )
-            {
-                m_server.quit();
-                Thread::wait(this);
-            }
-
             // try to reconnect
+            disconnect();
             try
             {
                 m_server.connect( m_port );
@@ -201,6 +201,7 @@ class RmanConnect: public Iop
                 ss << "Could not connect to port: " << port;
                 m_connectionError = ss.str();
                 m_inError = true;
+                std::cerr << ss.str() << std::endl;
                 return;
             }
 
@@ -209,6 +210,17 @@ class RmanConnect: public Iop
             {
                 Thread::spawn(::rmanConnectListen, 1, this);
                 std::cout << "Connected to port: " << m_server.getPort() << std::endl;
+            }
+        }
+
+        // disconnect the server for it's port
+        void disconnect()
+        {
+            if ( m_server.isConnected() )
+            {
+                m_server.quit();
+                Thread::wait(this);
+                std::cout << "Disconnected from port: " << m_server.getPort() << std::endl;
             }
         }
 
@@ -382,7 +394,6 @@ static void rmanConnectListen(unsigned index, unsigned nthreads, void* data)
                 break;
             }
         }
-        
     }
 }
 

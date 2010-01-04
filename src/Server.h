@@ -92,7 +92,7 @@ namespace rmanconnect
         void quit();
 
         //! Returns whether or not the server is connected to a port.
-        bool isConnected(){ return ( mpAcceptor!=0 ); }
+        bool isConnected(){ return mAcceptor.is_open(); }
 
         //! Returns the port the server is currently connected to.
         int getPort(){ return mPort; }
@@ -105,28 +105,126 @@ namespace rmanconnect
         // boost::asio tcp stuff
         boost::asio::io_service mIoService;
         boost::asio::ip::tcp::socket mSocket;
-        boost::asio::ip::tcp::acceptor* mpAcceptor;
+        boost::asio::ip::tcp::acceptor mAcceptor;
     };
 }
 
 /*! \mainpage RmanConnect
  *
  * The RmanConnect project is a RenderMan Interface-compatible display driver
- * and Nuke plugin for direct rendering in the Nuke interface.
+ * and Nuke plugin for direct rendering into the Nuke interface.
  *
- * RenderMan® is a registered trademark of Pixar.<br>
- * Nuke® is a registered trademark of The Foundry.
+ * <b>RenderMan® is a registered trademark of Pixar.<br>
+ * Nuke® is a registered trademark of The Foundry.</b>
  *
- * \image html rmanconnect_grab.jpg
- *
- * RmanConnect is based on a simple Client/Server model and the classes for
- * those are described <a href="annotated.html">here</a>.
+ * \image html nuke_examplebuild_small.jpg
  *
  * The code is freely available from http://github.com/danbethell/rmanconnect
- * and is released under the Revised BSD license. See \link COPYING \endlink
+ * and is released under the New BSD license. See \link COPYING \endlink
  * for more details.
  *
- * © Copyright 2010, Dan Bethell, Johannes Saam.
+ * RmanConnect is based on a simple Client/Server model, suitable for rendering
+ * to/from a variety of applications. The classes are described
+ * <a href="annotated.html">here</a>. The TCP/IP interface code is handled using
+ * the <a href="http://www.boost.org/doc/libs/1_40_0/doc/html/boost_asio.html">
+ * Boost.Asio</a> library. The display driver will theoretically build
+ * using any RenderMan-compatible renderer
+ * but the included <a href="http://cmake.com"> CMake</a> build script assumes
+ * you have <a href="http://3delight.com">3Delight</a> installed.
+ *
+ * \section building Building
+ *
+ * Ensure you have <a href="http://www.thefoundry.co.uk">Nuke</a> (5.2),
+ * <a href="http://www.3delight.com">3Delight</a> (9.0),
+ * <a href="http://www.boost.org/">Boost</a> (1.40) and
+ * <a href="http://cmake.org/">CMake</a> (2.8) installed. You should set the
+ * following environment variables before running <i>cmake</i>.
+ * <ul>
+ *  <li><b>NDK_PATH</b> - The path to your Nuke libraries.
+ *  <li><b>DELIGHT</b> - The path to your 3Delight installation.
+ * </ul>
+ *
+ * \section rman_plugin Display Driver
+ *
+ * The display driver works just like any other, but has two additional
+ * parameters: <b>hostname</b> and <b>port</b>. Using these you can control
+ * which host and socket the display is rendered to.
+ *
+ * You should refer to your renderer's documentation for setting up the display
+ * driver but it is normally as simple as putting something akin to the
+ * following in your <i>rendermn.ini</i> configuration.
+ *
+ * \code
+ * /display/dso/RmanConnect /full/path/to/d_rmanConnect.dpy
+ * \endcode
+ *
+ * It's important that you always render images as 32-bit floating-point
+ * (i.e. the quantize settings are all zero).
+ *
+ * Here is an example of a rib snippet which renders the primary display to port
+ * <i>9201</i> on <i>localhost</i>.
+ *
+ * \code
+ * # Render beauty to port 9201
+ * Display "" "RmanConnect" "rgba"
+ *   "float[4] quantize" [ 0 0 0 0 ]
+ *   "string filter" [ "gaussian" ]
+ *   "float[2] filterwidth" [ 2 2 ]
+ *   "string hostname" [ "localhost" ]
+ *   "integer port" [ 9201 ]
+ * \endcode
+ *
+ * You can render multiple displays to different hosts/ports at the same time.
+ *
+ * \code
+ * # Render the __Pworld AOV to port 9202
+ * Display "+" "RmanConnect" "point __Pworld"
+ *   "float[4] quantize" [ 0 0 0 0 ]
+ *   "string filter" [ "gaussian" ]
+ *   "float[2] filterwidth" [ 2 2 ]
+ *   "string hostname" [ "localhost" ]
+ *   "integer port" [ 9202 ]
+ *
+ * # Render the __Nworld AOV to port 9203
+ * Display "+" "RmanConnect" "point __Nworld"
+ *   "float[4] quantize" [ 0 0 0 0 ]
+ *   "string filter" [ "gaussian" ]
+ *   "float[2] filterwidth" [ 2 2 ]
+ *   "string hostname" [ "localhost" ]
+ *   "integer port" [ 9203 ]
+ * \endcode
+ *
+ * \section nuke_plugin Nuke Plugin
+ *
+ * \image html nuke_examplebuild_rendering.jpg
+ *
+ * The nuke plugin defines a node called <b>RmanConnect</b>. Once it's built you
+ * just need to ensure it's somewhere on your <i>NUKE_PATH</i>.
+ *
+ * \code
+ * nuke.load("nk_rmanConnect")
+ * nuke.createNode("RmanConnect")
+ * \endcode
+ *
+ * The node has two knobs: a format knob, and a port knob.
+ * The <b>format</b> sets the output buffer size for the node. If an incoming
+ * image is a different size to the buffer then it will be padded with black or
+ * cropped.
+ * The <b>port</b> knob sets the TCP port address that the node will listen for
+ * connections on.
+ *
+ * \image html nukeplugin_knobs.jpg
+ *
+ * By default <b>port</b> is set to <i>9201</i> and if a node cannot connect
+ * then it will report an error. Change the port value will disconnect the
+ * server and reconnect it to the new port. All instances of the
+ * <b>RmanConnect</b> node will need unique port addresses.
+ *
+ * \image html nukeplugin_portclash.jpg
+ *
+ * \section authors Authors
+ * <ul><li>Dan Bethell (danbethell at gmail dot com)</li>
+ * <li>Johannes Saam (johannessaam at googlemail dot com)</li></ul>
  */
 
 /*! \page COPYING
