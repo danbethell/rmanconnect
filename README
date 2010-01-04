@@ -7,7 +7,7 @@ and Nuke plugin for direct rendering into the Nuke interface.
 * Nuke® is a registered trademark of The Foundry.
 
 The code is freely available from http://github.com/danbethell/rmanconnect
-and is released under the New BSD license. See \link COPYING \endlink
+and is released under the New BSD license. See the COPYING file
 for more details.
 
 For more information about the plugins and usage examples please refer to the
