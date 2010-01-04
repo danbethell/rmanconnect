@@ -74,43 +74,49 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00031"></a>00031 <span class="preprocessor">#ifndef RMAN_CONNECT_DATA_H_</span>
 <a name="l00032"></a>00032 <span class="preprocessor"></span><span class="preprocessor">#define RMAN_CONNECT_DATA_H_</span>
 <a name="l00033"></a>00033 <span class="preprocessor"></span>
-<a name="l00035"></a>00035 <span class="keyword">namespace </span>rmanconnect
-<a name="l00036"></a>00036 {
-<a name="l00049"></a><a class="code" href="classrmanconnect_1_1Data.html">00049</a>     <span class="keyword">class </span><a class="code" href="classrmanconnect_1_1Data.html" title="Represents image information passed from Client to Server.">Data</a>
-<a name="l00050"></a>00050     {
-<a name="l00051"></a>00051     <span class="keyword">friend</span> <span class="keyword">class </span><a class="code" href="classrmanconnect_1_1Client.html" title="Used to send an image to a Server.">Client</a>;
-<a name="l00052"></a>00052     <span class="keyword">friend</span> <span class="keyword">class </span><a class="code" href="classrmanconnect_1_1Server.html" title="Represents a listening Server, ready to accept incoming images.">Server</a>;
-<a name="l00053"></a>00053     <span class="keyword">public</span>:
-<a name="l00055"></a>00055         <a class="code" href="classrmanconnect_1_1Data.html#a767d423fdeeda72d8325b3c772603895" title="Constructor.">Data</a>( <span class="keywordtype">int</span> <a class="code" href="classrmanconnect_1_1Data.html#a590defa484f94dc0eb311a5bc8e74107" title="X position.">x</a>=0, <span class="keywordtype">int</span> <a class="code" href="classrmanconnect_1_1Data.html#a9fb0bec58e7544deb1638e1a61280b7e" title="y position">y</a>=0,
-<a name="l00056"></a>00056               <span class="keywordtype">int</span> <a class="code" href="classrmanconnect_1_1Data.html#a4f963205576bf2cce03535a566e74881" title="Width.">width</a>=0, <span class="keywordtype">int</span> <a class="code" href="classrmanconnect_1_1Data.html#ab1f2975ce7735f928d2d8c22e6a7e21b" title="Height.">height</a>=0,
-<a name="l00057"></a>00057               <span class="keywordtype">int</span> <a class="code" href="classrmanconnect_1_1Data.html#a49112e0e545e092b0d51bf8267789375" title="Samples-per-pixel, aka channel depth.">spp</a>=0, <span class="keyword">const</span> <span class="keywordtype">float</span> *<a class="code" href="classrmanconnect_1_1Data.html#a2b3fa5ab2a0ce9c125982f439a05e467" title="Pointer to the pixel data.">data</a>=0 );
-<a name="l00059"></a>00059         <a class="code" href="classrmanconnect_1_1Data.html#aab31956423290f0d62dcca47ab4d16dd" title="Destructor.">~Data</a>();
-<a name="l00060"></a>00060         
-<a name="l00067"></a><a class="code" href="classrmanconnect_1_1Data.html#a09376cb367ef09869d2674eacfa6ba4e">00067</a>         <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code" href="classrmanconnect_1_1Data.html#a09376cb367ef09869d2674eacfa6ba4e" title="The &amp;#39;type&amp;#39; of message this Data represents.">type</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> mType; }
-<a name="l00068"></a>00068 
-<a name="l00070"></a><a class="code" href="classrmanconnect_1_1Data.html#a590defa484f94dc0eb311a5bc8e74107">00070</a>         <span class="keywordtype">int</span> <a class="code" href="classrmanconnect_1_1Data.html#a590defa484f94dc0eb311a5bc8e74107" title="X position.">x</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> mX; }
-<a name="l00072"></a><a class="code" href="classrmanconnect_1_1Data.html#a9fb0bec58e7544deb1638e1a61280b7e">00072</a>         <span class="keywordtype">int</span> <a class="code" href="classrmanconnect_1_1Data.html#a9fb0bec58e7544deb1638e1a61280b7e" title="y position">y</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> mY; }
-<a name="l00074"></a><a class="code" href="classrmanconnect_1_1Data.html#a4f963205576bf2cce03535a566e74881">00074</a>         <span class="keywordtype">int</span> <a class="code" href="classrmanconnect_1_1Data.html#a4f963205576bf2cce03535a566e74881" title="Width.">width</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> mWidth; }
-<a name="l00076"></a><a class="code" href="classrmanconnect_1_1Data.html#ab1f2975ce7735f928d2d8c22e6a7e21b">00076</a>         <span class="keywordtype">int</span> <a class="code" href="classrmanconnect_1_1Data.html#ab1f2975ce7735f928d2d8c22e6a7e21b" title="Height.">height</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> mHeight; }
-<a name="l00078"></a><a class="code" href="classrmanconnect_1_1Data.html#a49112e0e545e092b0d51bf8267789375">00078</a>         <span class="keywordtype">int</span> <a class="code" href="classrmanconnect_1_1Data.html#a49112e0e545e092b0d51bf8267789375" title="Samples-per-pixel, aka channel depth.">spp</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> mSpp; }
-<a name="l00080"></a><a class="code" href="classrmanconnect_1_1Data.html#a2b3fa5ab2a0ce9c125982f439a05e467">00080</a>         <span class="keyword">const</span> <span class="keywordtype">float</span> *<a class="code" href="classrmanconnect_1_1Data.html#a2b3fa5ab2a0ce9c125982f439a05e467" title="Pointer to the pixel data.">data</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> mpData; }
-<a name="l00081"></a>00081 
-<a name="l00082"></a>00082     <span class="keyword">private</span>:
-<a name="l00083"></a>00083         <span class="comment">// what type of data is this?</span>
-<a name="l00084"></a>00084         <span class="keywordtype">int</span> mType;
+<a name="l00034"></a>00034 <span class="preprocessor">#include &lt;vector&gt;</span>
+<a name="l00035"></a>00035 
+<a name="l00037"></a>00037 <span class="keyword">namespace </span>rmanconnect
+<a name="l00038"></a>00038 {
+<a name="l00051"></a><a class="code" href="classrmanconnect_1_1Data.html">00051</a>     <span class="keyword">class </span><a class="code" href="classrmanconnect_1_1Data.html" title="Represents image information passed from Client to Server.">Data</a>
+<a name="l00052"></a>00052     {
+<a name="l00053"></a>00053     <span class="keyword">friend</span> <span class="keyword">class </span><a class="code" href="classrmanconnect_1_1Client.html" title="Used to send an image to a Server.">Client</a>;
+<a name="l00054"></a>00054     <span class="keyword">friend</span> <span class="keyword">class </span><a class="code" href="classrmanconnect_1_1Server.html" title="Represents a listening Server, ready to accept incoming images.">Server</a>;
+<a name="l00055"></a>00055     <span class="keyword">public</span>:
+<a name="l00057"></a>00057         <a class="code" href="classrmanconnect_1_1Data.html#a767d423fdeeda72d8325b3c772603895" title="Constructor.">Data</a>( <span class="keywordtype">int</span> <a class="code" href="classrmanconnect_1_1Data.html#a590defa484f94dc0eb311a5bc8e74107" title="X position.">x</a>=0, <span class="keywordtype">int</span> <a class="code" href="classrmanconnect_1_1Data.html#a9fb0bec58e7544deb1638e1a61280b7e" title="y position">y</a>=0,
+<a name="l00058"></a>00058               <span class="keywordtype">int</span> <a class="code" href="classrmanconnect_1_1Data.html#a4f963205576bf2cce03535a566e74881" title="Width.">width</a>=0, <span class="keywordtype">int</span> <a class="code" href="classrmanconnect_1_1Data.html#ab1f2975ce7735f928d2d8c22e6a7e21b" title="Height.">height</a>=0,
+<a name="l00059"></a>00059               <span class="keywordtype">int</span> <a class="code" href="classrmanconnect_1_1Data.html#a49112e0e545e092b0d51bf8267789375" title="Samples-per-pixel, aka channel depth.">spp</a>=0, <span class="keyword">const</span> <span class="keywordtype">float</span> *<a class="code" href="classrmanconnect_1_1Data.html#a2b3fa5ab2a0ce9c125982f439a05e467" title="Pointer to pixel data owned by the display driver (client-side).">data</a>=0 );
+<a name="l00061"></a>00061         <a class="code" href="classrmanconnect_1_1Data.html#aab31956423290f0d62dcca47ab4d16dd" title="Destructor.">~Data</a>();
+<a name="l00062"></a>00062         
+<a name="l00069"></a><a class="code" href="classrmanconnect_1_1Data.html#a09376cb367ef09869d2674eacfa6ba4e">00069</a>         <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code" href="classrmanconnect_1_1Data.html#a09376cb367ef09869d2674eacfa6ba4e" title="The &amp;#39;type&amp;#39; of message this Data represents.">type</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> mType; }
+<a name="l00070"></a>00070 
+<a name="l00072"></a><a class="code" href="classrmanconnect_1_1Data.html#a590defa484f94dc0eb311a5bc8e74107">00072</a>         <span class="keywordtype">int</span> <a class="code" href="classrmanconnect_1_1Data.html#a590defa484f94dc0eb311a5bc8e74107" title="X position.">x</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> mX; }
+<a name="l00074"></a><a class="code" href="classrmanconnect_1_1Data.html#a9fb0bec58e7544deb1638e1a61280b7e">00074</a>         <span class="keywordtype">int</span> <a class="code" href="classrmanconnect_1_1Data.html#a9fb0bec58e7544deb1638e1a61280b7e" title="y position">y</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> mY; }
+<a name="l00076"></a><a class="code" href="classrmanconnect_1_1Data.html#a4f963205576bf2cce03535a566e74881">00076</a>         <span class="keywordtype">int</span> <a class="code" href="classrmanconnect_1_1Data.html#a4f963205576bf2cce03535a566e74881" title="Width.">width</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> mWidth; }
+<a name="l00078"></a><a class="code" href="classrmanconnect_1_1Data.html#ab1f2975ce7735f928d2d8c22e6a7e21b">00078</a>         <span class="keywordtype">int</span> <a class="code" href="classrmanconnect_1_1Data.html#ab1f2975ce7735f928d2d8c22e6a7e21b" title="Height.">height</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> mHeight; }
+<a name="l00080"></a><a class="code" href="classrmanconnect_1_1Data.html#a49112e0e545e092b0d51bf8267789375">00080</a>         <span class="keywordtype">int</span> <a class="code" href="classrmanconnect_1_1Data.html#a49112e0e545e092b0d51bf8267789375" title="Samples-per-pixel, aka channel depth.">spp</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> mSpp; }
+<a name="l00082"></a><a class="code" href="classrmanconnect_1_1Data.html#a2b3fa5ab2a0ce9c125982f439a05e467">00082</a>         <span class="keyword">const</span> <span class="keywordtype">float</span> *<a class="code" href="classrmanconnect_1_1Data.html#a2b3fa5ab2a0ce9c125982f439a05e467" title="Pointer to pixel data owned by the display driver (client-side).">data</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> mpData; }
+<a name="l00084"></a><a class="code" href="classrmanconnect_1_1Data.html#ab11c44bdf456f8155ce71aef594aaf69">00084</a>         <span class="keyword">const</span> <span class="keywordtype">float</span> *<a class="code" href="classrmanconnect_1_1Data.html#ab11c44bdf456f8155ce71aef594aaf69" title="Pointer to pixel data owned by this object (server-side).">pixels</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> &amp;mPixelStore[0]; }
 <a name="l00085"></a>00085 
-<a name="l00086"></a>00086         <span class="comment">// x &amp; y position</span>
-<a name="l00087"></a>00087         <span class="keywordtype">int</span> mX, mY; 
-<a name="l00088"></a>00088         
-<a name="l00089"></a>00089         <span class="comment">// width, height, num channels (samples)</span>
-<a name="l00090"></a>00090         <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> mWidth, mHeight, mSpp;
-<a name="l00091"></a>00091 
-<a name="l00092"></a>00092         <span class="comment">// our pixel data, interleaved</span>
-<a name="l00093"></a>00093         <span class="keywordtype">float</span> *mpData; 
-<a name="l00094"></a>00094     };
-<a name="l00095"></a>00095 }
-<a name="l00096"></a>00096 
-<a name="l00097"></a>00097 <span class="preprocessor">#endif // RMAN_CONNECT_DATA_H_</span>
+<a name="l00086"></a>00086     <span class="keyword">private</span>:
+<a name="l00087"></a>00087         <span class="comment">// what type of data is this?</span>
+<a name="l00088"></a>00088         <span class="keywordtype">int</span> mType;
+<a name="l00089"></a>00089 
+<a name="l00090"></a>00090         <span class="comment">// x &amp; y position</span>
+<a name="l00091"></a>00091         <span class="keywordtype">int</span> mX, mY; 
+<a name="l00092"></a>00092         
+<a name="l00093"></a>00093         <span class="comment">// width, height, num channels (samples)</span>
+<a name="l00094"></a>00094         <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> mWidth, mHeight, mSpp;
+<a name="l00095"></a>00095 
+<a name="l00096"></a>00096         <span class="comment">// our pixel data pointer (for driver-owned pixels)</span>
+<a name="l00097"></a>00097         <span class="keywordtype">float</span> *mpData; 
+<a name="l00098"></a>00098 
+<a name="l00099"></a>00099         <span class="comment">// our persistent pixel storage (for Data-owned pixels)</span>
+<a name="l00100"></a>00100         std::vector&lt;float&gt; mPixelStore;
+<a name="l00101"></a>00101     };
+<a name="l00102"></a>00102 }
+<a name="l00103"></a>00103 
+<a name="l00104"></a>00104 <span class="preprocessor">#endif // RMAN_CONNECT_DATA_H_</span>
 </pre></div></div>
 <!--- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -126,7 +132,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-<hr size="1"/><address style="text-align: right;"><small>Generated on Mon Jan 4 14:35:43 2010 for RmanConnect by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on Mon Jan 4 15:40:53 2010 for RmanConnect by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>
