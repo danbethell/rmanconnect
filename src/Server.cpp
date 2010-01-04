@@ -153,10 +153,8 @@ Data Server::listen()
 
                 // get pixels
                 int num_samples = d.width() * d.height() * d.spp();
-                float* pixel_data = new float[num_samples];
-                boost::asio::read( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&pixel_data[0]), sizeof(float)*num_samples ) ) ;
-                d.mpData = pixel_data;
-
+                d.mPixelStore.resize( num_samples );
+                boost::asio::read( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&d.mPixelStore[0]), sizeof(float)*num_samples ) ) ;
                 break;
             }
             case 2: // close image

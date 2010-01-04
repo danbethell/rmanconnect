@@ -28,10 +28,6 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-static const char* const CLASS = "RmanConnect";
-static const char* const HELP =
-        "Connects to renderman in a output through the corresponding display driver";
-
 #include <time.h>
 #include <stdio.h>
 #include <vector>
@@ -45,12 +41,15 @@ static const char* const HELP =
 #include "DDImage/DDMath.h"
 using namespace DD::Image;
 
-// TODO: format output automatically
-// TODO: kill thread on exit nuke
-// TODO: client port based on port parameter
-
 #include "Data.h"
 #include "Server.h"
+
+// class name
+static const char* const CLASS = "RmanConnect";
+
+// help
+static const char* const HELP = 
+    "Listens for renders coming from the RmanConnect RenderMan display driver.";
 
 // our default port
 const int rmanconnect_default_port = 9201;
@@ -58,8 +57,7 @@ const int rmanconnect_default_port = 9201;
 // our listener method
 static void rmanConnectListen(unsigned index, unsigned nthreads, void* data);
 
-/// @class Colour
-/// @brief lightweight class for describing an individual pixel
+// lightweight pixel class
 class RmanColour
 {
     public:
@@ -76,9 +74,7 @@ class RmanColour
         float _val[4];
 };
 
-///=====
-/// @class RmanBuffer
-/// @brief describes an image buffer or pixels
+// our image buffer class
 class RmanBuffer
 {
     public:
@@ -117,11 +113,8 @@ class RmanBuffer
         unsigned int _width;
         unsigned int _height;
 };
-///=====
 
-///=====
-/// @class RmanConnect
-/// @brief our nuke node that receives data from an rman display driver
+// our nuke node
 class RmanConnect: public Iop
 {
     public:
@@ -146,10 +139,6 @@ class RmanConnect: public Iop
             inputs(0);
         }
 
-        // Destroying the Op should get rid of the parallel threads.
-        // Unfortunatly currently Nuke does not destroy one of the Ops on a
-        // deleted node, as it is saving it for Undo. This bug will be fixed
-        // in an upcoming version, so you should implement this:
         ~RmanConnect()
         {
             disconnect();
@@ -224,9 +213,6 @@ class RmanConnect: public Iop
             }
         }
 
-        // The hash value must change or Nuke will think the picture is the
-        // same. If you can't determine some id for the picture, you should
-        // use the current time or something.
         void append(Hash& hash)
         {
             hash.append(hash_counter);
@@ -299,7 +285,6 @@ class RmanConnect: public Iop
         void knobs(Knob_Callback f)
         {
             Format_knob(f, &m_fmt, "m_formats_knob", "format");
-            Tooltip(f, "Output render format");
             Int_knob(f, &m_port, "port_number", "port");
         }
 
@@ -360,7 +345,7 @@ static void rmanConnectListen(unsigned index, unsigned nthreads, void* data)
                 int _height = d.height();
                 int _spp = d.spp();
 
-                const float* pixel_data = d.data();
+                const float* pixel_data = d.pixels();
                 for (_x = 0; _x < _width; ++_x)
                     for (_y = 0; _y < _height; ++_y)
                     {
@@ -370,9 +355,6 @@ static void rmanConnectListen(unsigned index, unsigned nthreads, void* data)
                         for (_s = 0; _s < _spp; ++_s)
                             pix[_s] = pixel_data[offset+_s];
                     }
-
-                // TODO: ideally when 'd' goes out of scope this could be cleaned up for us
-                delete[] pixel_data;
 
                 // release buffer
                 node->m_mutex.unlock();
@@ -400,4 +382,4 @@ static void rmanConnectListen(unsigned index, unsigned nthreads, void* data)
 //=====
 // nuke builder stuff
 static Iop* constructor(Node* node){ return new RmanConnect(node); }
-const Iop::Description RmanConnect::desc(CLASS, "Image/RmanConnect", constructor);
+const Iop::Description RmanConnect::desc(CLASS, 0, constructor);

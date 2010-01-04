@@ -31,6 +31,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef RMAN_CONNECT_DATA_H_
 #define RMAN_CONNECT_DATA_H_
 
+#include <vector>
+
 //! \namespace rmanconnect
 namespace rmanconnect
 {
@@ -78,6 +80,8 @@ namespace rmanconnect
         int spp() const { return mSpp; }
         //! Pointer to the pixel data
         const float *data() const { return mpData; }
+        //! Pointer to pixels allocated by this object
+        const float *pixels() const { return &mPixelStore[0]; }
 
     private:
         // what type of data is this?
@@ -89,8 +93,11 @@ namespace rmanconnect
         // width, height, num channels (samples)
         unsigned int mWidth, mHeight, mSpp;
 
-        // our pixel data, interleaved
+        // our pixel data pointer (for driver-owned pixels)
         float *mpData; 
+
+        // our persistent pixel storage (for Data-owned pixels)
+        std::vector<float> mPixelStore;
     };
 }
 
