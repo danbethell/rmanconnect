@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>RmanConnect: RmanConnect</title>
+<title>RmanConnect: RmanConnect v0.2</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javaScript" src="search/search.js"></script>
@@ -38,49 +38,55 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </div>
 </div>
 <div class="contents">
-<h1>RmanConnect</h1><p>The RmanConnect project is a RenderMan Interface-compatible display driver and Nuke plugin for direct rendering into the Nuke interface.</p>
+<h1>RmanConnect v0.2</h1><h2><a class="anchor" id="Overview">
+Overview</a></h2>
+<p>The RmanConnect project is a RenderMan Interface-compatible display driver and Nuke plugin for direct rendering into the Nuke interface.</p>
 <p><b>RenderMan® is a registered trademark of Pixar.<br/>
  Nuke® is a registered trademark of The Foundry.</b></p>
 <div align="center">
 <img src="nuke_examplebuild_small.jpg" alt="nuke_examplebuild_small.jpg"/>
 </div>
 <p>The code is freely available from <a href="http://github.com/danbethell/rmanconnect">http://github.com/danbethell/rmanconnect</a> and is released under the New BSD license. See <a class="el" href="COPYING.html">COPYING</a> for more details.</p>
-<p>RmanConnect is based on a simple Client/Server model, suitable for rendering to/from a variety of applications. The classes are described <a href="annotated.html">here</a>. The TCP/IP interface code is handled using the <a href="http://www.boost.org/doc/libs/1_40_0/doc/html/boost_asio.html">Boost.Asio</a> library. The display driver will theoretically build using any RenderMan-compatible renderer but the included <a href="http://cmake.com">CMake</a> build script assumes you have <a href="http://3delight.com">3Delight</a> installed.</p>
+<p>RmanConnect is based on a simple Client/Server model, suitable for rendering to/from a variety of applications. The classes are described <a href="annotated.html">here</a>. The TCP/IP interface code is handled using the <a href="http://www.boost.org/doc/libs/1_40_0/doc/html/boost_asio.html">Boost.Asio</a> library. The display driver will theoretically build using any RenderMan-compatible renderer but the included <a href="http://cmake.com">CMake</a> build script assumes you have <a href="http://3delight.com">3Delight</a> or <a href="http://renderman.pixar.com">PRMan</a> installed.</p>
 <h2><a class="anchor" id="building">
 Building</a></h2>
-<p>Ensure you have <a href="http://www.thefoundry.co.uk">Nuke</a> (5.2), <a href="http://www.3delight.com">3Delight</a> (9.0), <a href="http://www.boost.org/">Boost</a> (1.40) and <a href="http://cmake.org/">CMake</a> (2.8) installed. You should set the following environment variables before running <em>cmake</em>. </p>
+<p>Ensure you have <a href="http://www.thefoundry.co.uk">Nuke</a> (5.2), either <a href="http://www.3delight.com">3Delight</a> (9.0) or <a href="http://renderman.pixar.com">PRMan</a> (15.0), <a href="http://www.boost.org/">Boost</a> (1.40) and <a href="http://cmake.org/">CMake</a> (2.8) installed. You should set the following environment variables before running <em>cmake</em>. </p>
 <ul>
 <li>
-<b>NDK_PATH</b> - The path to your Nuke libraries. </li>
+<b>RMAN</b> - set to either <b>3Delight</b> or <b>PRMan</b> </li>
 <li>
-<b>DELIGHT</b> - The path to your 3Delight installation. </li>
+<b>DELIGHT</b> - (3Delight only) the path to your 3Delight installation. </li>
+<li>
+<b>RMANTREE</b> - (PRMan only) the path to your RPS installation. </li>
+<li>
+<b>NDK_PATH</b> - The path to your Nuke libraries. </li>
 </ul>
 <h2><a class="anchor" id="rman_plugin">
 Display Driver</a></h2>
 <p>The display driver works just like any other, but has two additional parameters: <b>hostname</b> and <b>port</b>. Using these you can control which host and socket the display is rendered to.</p>
 <p>You should refer to your renderer's documentation for setting up the display driver but it is normally as simple as putting something akin to the following in your <em>rendermn.ini</em> configuration.</p>
-<div class="fragment"><pre class="fragment"> /display/dso/RmanConnect /full/path/to/d_rmanConnect.dpy
+<div class="fragment"><pre class="fragment"> /display/dso/RmanConnect /full/path/to/d_rmanConnect
 </pre></div><p>It's important that you always render images as 32-bit floating-point (i.e. the quantize settings are all zero).</p>
 <p>Here is an example of a rib snippet which renders the primary display to port <em>9201</em> on <em>localhost</em>.</p>
 <div class="fragment"><pre class="fragment"><span class="preprocessor"> # Render beauty to port 9201</span>
-<span class="preprocessor"></span> Display <span class="stringliteral">&quot;&quot;</span> <span class="stringliteral">&quot;RmanConnect&quot;</span> <span class="stringliteral">&quot;rgba&quot;</span>
-   <span class="stringliteral">&quot;float[4] quantize&quot;</span> [ 0 0 0 0 ]
+<span class="preprocessor"></span> Display <span class="stringliteral">&quot;rgba&quot;</span> <span class="stringliteral">&quot;RmanConnect&quot;</span> <span class="stringliteral">&quot;rgba&quot;</span>
+   <span class="stringliteral">&quot;int[4] quantize&quot;</span> [ 0 0 0 0 ]
    <span class="stringliteral">&quot;string filter&quot;</span> [ <span class="stringliteral">&quot;gaussian&quot;</span> ]
    <span class="stringliteral">&quot;float[2] filterwidth&quot;</span> [ 2 2 ]
    <span class="stringliteral">&quot;string hostname&quot;</span> [ <span class="stringliteral">&quot;localhost&quot;</span> ]
    <span class="stringliteral">&quot;integer port&quot;</span> [ 9201 ]
 </pre></div><p>You can render multiple displays to different hosts/ports at the same time.</p>
 <div class="fragment"><pre class="fragment"><span class="preprocessor"> # Render the __Pworld AOV to port 9202</span>
-<span class="preprocessor"></span> Display <span class="stringliteral">&quot;+&quot;</span> <span class="stringliteral">&quot;RmanConnect&quot;</span> <span class="stringliteral">&quot;point __Pworld&quot;</span>
-   <span class="stringliteral">&quot;float[4] quantize&quot;</span> [ 0 0 0 0 ]
+<span class="preprocessor"></span> Display <span class="stringliteral">&quot;+Pworld&quot;</span> <span class="stringliteral">&quot;RmanConnect&quot;</span> <span class="stringliteral">&quot;point __Pworld&quot;</span>
+   <span class="stringliteral">&quot;int[4] quantize&quot;</span> [ 0 0 0 0 ]
    <span class="stringliteral">&quot;string filter&quot;</span> [ <span class="stringliteral">&quot;gaussian&quot;</span> ]
    <span class="stringliteral">&quot;float[2] filterwidth&quot;</span> [ 2 2 ]
    <span class="stringliteral">&quot;string hostname&quot;</span> [ <span class="stringliteral">&quot;localhost&quot;</span> ]
    <span class="stringliteral">&quot;integer port&quot;</span> [ 9202 ]
 
 <span class="preprocessor"> # Render the __Nworld AOV to port 9203</span>
-<span class="preprocessor"></span> Display <span class="stringliteral">&quot;+&quot;</span> <span class="stringliteral">&quot;RmanConnect&quot;</span> <span class="stringliteral">&quot;point __Nworld&quot;</span>
-   <span class="stringliteral">&quot;float[4] quantize&quot;</span> [ 0 0 0 0 ]
+<span class="preprocessor"></span> Display <span class="stringliteral">&quot;+Nworld&quot;</span> <span class="stringliteral">&quot;RmanConnect&quot;</span> <span class="stringliteral">&quot;point __Nworld&quot;</span>
+   <span class="stringliteral">&quot;int[4] quantize&quot;</span> [ 0 0 0 0 ]
    <span class="stringliteral">&quot;string filter&quot;</span> [ <span class="stringliteral">&quot;gaussian&quot;</span> ]
    <span class="stringliteral">&quot;float[2] filterwidth&quot;</span> [ 2 2 ]
    <span class="stringliteral">&quot;string hostname&quot;</span> [ <span class="stringliteral">&quot;localhost&quot;</span> ]
@@ -124,7 +130,7 @@ Johannes Saam (johannes dot saam at googlemail dot com)</li>
 </iframe>
 </div>
 
-<hr size="1"/><address style="text-align: right;"><small>Generated on Mon Jan 4 15:49:27 2010 for RmanConnect by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on Fri Jan 8 17:22:59 2010 for RmanConnect by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>
