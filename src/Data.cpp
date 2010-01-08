@@ -37,7 +37,7 @@ using namespace rmanconnect;
 Data::Data( int x, int y, 
             int width, int height, 
             int spp, const float *data ) :
-    mType(1),
+    mType(-1),
     mX(x),
     mY(y),
     mWidth(width),

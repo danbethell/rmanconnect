@@ -106,15 +106,21 @@ void Server::quit()
     client.quit();
 }
 
+void Server::accept()
+{
+    if ( mSocket.is_open() )
+        mSocket.close();
+    mAcceptor.accept(mSocket);
+}
+
 Data Server::listen()
 {
-    mAcceptor.accept(mSocket);
-
     Data d;
+
+    // read the key from the incoming data
     try
     {
-        // read the key from the incoming data
-        int key;
+        int key = -1;
         boost::asio::read( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&key), sizeof(int)) );
 
         switch( key )
@@ -162,20 +168,22 @@ Data Server::listen()
                 int image_id;
                 d.mType = key;
                 boost::asio::read( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&image_id), sizeof(int)) );
+                mSocket.close();
                 break;
             }
             case 9: // quit
             {
                 d.mType = 9;
-                mAcceptor.close();
+                mSocket.close();
                 break;
             }
         }
     }
     catch( ... )
     {
+        mSocket.close();
+        THROW( Iex::BaseExc, "Could not read from socket!" );
     }
 
-    mSocket.close();
     return d;
 }

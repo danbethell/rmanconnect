@@ -1,7 +1,12 @@
+0.3
+* Added missing lock around critical section in Iop::engine().
+* Client connections now persist throughout a render.
+* Terminal output messages now print the node's name.
+
 0.2
-* added PRMan build configuration
-* updated test rib to work with PRMan
-* driver now tries to ensure pixels are RGBA-ordered
+* Added PRMan build configuration.
+* Updated test rib to work with PRMan.
+* Driver now tries to ensure pixels are RGBA-ordered.
 
 0.1
-* initial release
+* Initial release.

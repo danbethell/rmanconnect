@@ -190,7 +190,8 @@ class RmanConnect: public Iop
                 ss << "Could not connect to port: " << port;
                 m_connectionError = ss.str();
                 m_inError = true;
-                std::cerr << ss.str() << std::endl;
+                print_name( std::cerr );
+                std::cerr << ": " << ss.str() << std::endl;
                 return;
             }
 
@@ -198,7 +199,8 @@ class RmanConnect: public Iop
             if ( m_server.isConnected() )
             {
                 Thread::spawn(::rmanConnectListen, 1, this);
-                std::cout << "Connected to port: " << m_server.getPort() << std::endl;
+                print_name( std::cout );
+                std::cout << ": Connected to port " << m_server.getPort() << std::endl;
             }
         }
 
@@ -209,7 +211,8 @@ class RmanConnect: public Iop
             {
                 m_server.quit();
                 Thread::wait(this);
-                std::cout << "Disconnected from port: " << m_server.getPort() << std::endl;
+                print_name( std::cout );
+                std::cout << ": Disconnected from port " << m_server.getPort() << std::endl;
             }
         }
 
@@ -246,6 +249,7 @@ class RmanConnect: public Iop
             unsigned int yyy = static_cast<unsigned int> (y);
 
             // don't have a buffer yet
+            m_mutex.lock();
             if ( m_buffer._width==0 && m_buffer._height==0 )
             {
                 while (rOut < END)
@@ -280,6 +284,7 @@ class RmanConnect: public Iop
                     ++xxx;
                 }
             }
+            m_mutex.unlock();
         }
 
         void knobs(Knob_Callback f)
@@ -314,66 +319,83 @@ static void rmanConnectListen(unsigned index, unsigned nthreads, void* data)
     RmanConnect * node = reinterpret_cast<RmanConnect*> (data);
     while (!killThread)
     {
-        // block here until we get some data
-        rmanconnect::Data d = node->m_server.listen();
+        // accept incoming connections!
+        node->m_server.accept();
 
-        // handle the data we received
-        switch (d.type())
+        // our incoming data object
+        rmanconnect::Data d;
+
+        // loop over incoming data
+        while ((d.type()==2||d.type()==9)==false)
         {
-            case 0: // open a new image
+            // listen for some data
+            try
             {
-                node->m_mutex.lock();
-                node->m_buffer.init(d.width(), d.height());
-                node->m_mutex.unlock();
+                d = node->m_server.listen();
+            }
+            catch( ... )
+            {
                 break;
             }
-            case 1: // image data
+
+            // handle the data we received
+            switch (d.type())
             {
-                // lock buffer
-                node->m_mutex.lock();
+                case 0: // open a new image
+                {
+                    node->m_mutex.lock();
+                    node->m_buffer.init(d.width(), d.height());
+                    node->m_mutex.unlock();
+                    break;
+                }
+                case 1: // image data
+                {
+                    // lock buffer
+                    node->m_mutex.lock();
 
-                // copy data from d into node->m_buffer
-                int _w = node->m_buffer._width;
-                int _h = node->m_buffer._height;
+                    // copy data from d into node->m_buffer
+                    int _w = node->m_buffer._width;
+                    int _h = node->m_buffer._height;
 
-                unsigned int _x, _x0, _y, _y0, _s, offset;
-                _x = _x0 = _y = _y0 = _s = 0;
+                    unsigned int _x, _x0, _y, _y0, _s, offset;
+                    _x = _x0 = _y = _y0 = _s = 0;
 
-                int _xorigin = d.x();
-                int _yorigin = d.y();
-                int _width = d.width();
-                int _height = d.height();
-                int _spp = d.spp();
+                    int _xorigin = d.x();
+                    int _yorigin = d.y();
+                    int _width = d.width();
+                    int _height = d.height();
+                    int _spp = d.spp();
 
-                const float* pixel_data = d.pixels();
-                for (_x = 0; _x < _width; ++_x)
-                    for (_y = 0; _y < _height; ++_y)
-                    {
-                        RmanColour &pix = node->m_buffer.get(_x
-                                + _xorigin, _h - (_y + _yorigin + 1));
-                        offset = (_width * _y * _spp) + (_x * _spp);
-                        for (_s = 0; _s < _spp; ++_s)
-                            pix[_s] = pixel_data[offset+_s];
-                    }
+                    const float* pixel_data = d.pixels();
+                    for (_x = 0; _x < _width; ++_x)
+                        for (_y = 0; _y < _height; ++_y)
+                        {
+                            RmanColour &pix = node->m_buffer.get(_x
+                                    + _xorigin, _h - (_y + _yorigin + 1));
+                            offset = (_width * _y * _spp) + (_x * _spp);
+                            for (_s = 0; _s < _spp; ++_s)
+                                pix[_s] = pixel_data[offset+_s];
+                        }
 
-                // release buffer
-                node->m_mutex.unlock();
+                    // release lock
+                    node->m_mutex.unlock();
 
-                // update the image
-                node->flagForUpdate();
-                break;
-            }
-            case 2: // close image
-            {
-                // update the image
-                node->flagForUpdate();
-                break;
-            }
-            case 9: // this is sent when the parent process want to kill
-                    // the listening thread
-            {
-                killThread = true;
-                break;
+                    // update the image
+                    node->flagForUpdate();
+                    break;
+                }
+                case 2: // close image
+                {
+                    // update the image
+                    node->flagForUpdate();
+                    break;
+                }
+                case 9: // this is sent when the parent process want to kill
+                        // the listening thread
+                {
+                    killThread = true;
+                    break;
+                }
             }
         }
     }

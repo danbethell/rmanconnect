@@ -73,7 +73,7 @@ Client::~Client()
 
 void Client::openImage( Data &header )
 {
-    // connect to port
+    // connect to port!
     connect(mHost, mPort);
 
     // send image header message with image desc information
@@ -86,9 +86,6 @@ void Client::openImage( Data &header )
     // send our width & height
     boost::asio::write( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&header.mWidth), sizeof(int)) );
     boost::asio::write( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&header.mHeight), sizeof(int)) );
-
-    // disconnect
-    disconnect();
 }
 
 void Client::sendPixels( Data &data )
@@ -96,10 +93,6 @@ void Client::sendPixels( Data &data )
     if ( mImageId<0 )
         THROW( Iex::BaseExc, "Could not send data - image id is not valid!" );
 
-    // connect to port
-    connect(mHost, mPort);
-
-    boost::system::error_code ignored_error;
     // send data for image_id
     int key = 1;
     boost::asio::write( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&key), sizeof(int)) );
@@ -113,16 +106,10 @@ void Client::sendPixels( Data &data )
     boost::asio::write( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&data.mHeight), sizeof(int)) );
     boost::asio::write( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&data.mSpp), sizeof(int)) );
     boost::asio::write( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&data.mpData[0]), sizeof(float)*num_samples) );
-
-    // disconnect
-    disconnect();
 }
 
 void Client::closeImage( )
 {
-    // connect to port
-    connect(mHost, mPort);
-
     // send image complete message for image_id
     int key = 2;
     boost::asio::write( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&key), sizeof(int)) );
@@ -130,7 +117,7 @@ void Client::closeImage( )
     // tell the server which image we're closing
     boost::asio::write( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&mImageId), sizeof(int)) );
 
-    // disconnect
+    // disconnect from port!
     disconnect();
 }
 

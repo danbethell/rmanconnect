@@ -74,7 +74,11 @@ namespace rmanconnect
          */
         void connect( int port, bool seach=false );
 
-        /*! \brief Listens for incoming Client connections.
+        /*! \brief Sets up the server to accept an incoming Client connections.
+         */
+        void accept();
+
+        /*! \brief Listens for incoming messages from a Client.
          *
          * This function blocks (and so may be require running on a separate
          * thread), returning once a Client has sent a message.
