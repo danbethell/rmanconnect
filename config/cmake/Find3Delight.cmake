@@ -11,6 +11,7 @@
 # Variables defined by this module:
 #   3Delight_FOUND    
 #   3Delight_INCLUDE_DIR
+#   3Delight_COMPILE_FLAGS
 #   3Delight_LIBRARIES
 #   3Delight_LIBRARY_DIR
 #
@@ -34,6 +35,9 @@ FIND_PATH( 3Delight_INCLUDE_DIR ri.h
   $ENV{DELIGHT}/include
   ${3Delight_INSTALL_PATH}/include
   )
+
+# our compilation flags
+SET( 3Delight_COMPILE_FLAGS "-DDELIGHT" )
 
 # our library itself
 FIND_LIBRARY( 3Delight_LIBRARIES 3delight

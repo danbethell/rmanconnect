@@ -1,0 +1,7 @@
+0.2
+* added PRMan build configuration
+* updated test rib to work with PRMan
+* driver now tries to ensure pixels are RGBA-ordered
+
+0.1
+* initial release

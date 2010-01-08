@@ -28,14 +28,13 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "Client.h"
-#include "Data.h"
-
 #include <ndspy.h>
-
 #include <iostream>
 #include <exception>
 #include <cstring>
+
+#include "Client.h"
+#include "Data.h"
 
 extern "C"
 {
@@ -57,6 +56,18 @@ extern "C"
         int port_address = 9201;
         DspyFindIntInParamList( "port", &port_address, paramCount, parameters );
 
+        // shuffle format so we always write out RGBA
+        std::string chan[4] = { "r", "g", "b", "a" };
+        for ( unsigned i=0; i<formatCount; i++ )
+            for( unsigned int j=0; j<4; ++j )
+                if( std::string(format[i].name)==chan[j] && i!=j )
+                {
+                    PtDspyDevFormat tmp = format[j];
+                    format[j] = format[i];
+                    format[i] = tmp;
+                }
+
+        // now we can connect to the server and start rendering
         try
         {
             // create a new rmanConnect object
@@ -123,9 +134,16 @@ extern "C"
         return PkDspyErrorNone;
     }
 
+// some renderer-specific differences
+#ifdef PRMAN
+#define DATALEN_TYPE int
+#else
+#define DATALEN_TYPE size_t
+#endif
+
     // query the renderer for image details
     PtDspyError DspyImageQuery(PtDspyImageHandle pvImage,
-            PtDspyQueryType querytype, size_t datalen, void *data)
+                               PtDspyQueryType querytype, DATALEN_TYPE datalen, void *data)
     {
         if (datalen > 0 && data)
         {

@@ -16,14 +16,20 @@ project( rmanconnect )
 set( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/config/cmake )
 find_package( Boost 1.40.0 COMPONENTS system REQUIRED )
 find_package( Nuke REQUIRED )
-find_package( 3Delight REQUIRED )
 find_package( Doxygen )
+
+# try to find a rman lib (set by the RMAN envvar)
+set( RMAN "3Delight" )
+if ( $ENV{RMAN} MATCHES "" )
+  set( RMAN $ENV{RMAN} )
+endif ( $ENV{RMAN} MATCHES "" )
+find_package( ${RMAN} REQUIRED )
 
 include_directories(
   ${CMAKE_SOURCE_DIR}/src
   ${Boost_INCLUDE_DIRS}
   ${Nuke_INCLUDE_DIR}
-  ${3Delight_INCLUDE_DIR}
+  ${${RMAN}_INCLUDE_DIR}
   )
 
 link_directories( 
@@ -33,7 +39,7 @@ link_directories(
 #=====
 # Build the Nuke plugin
 add_library( nuke_plugin 
-  SHARED 
+  SHARED
   ${CMAKE_SOURCE_DIR}/src/nk_rmanConnect.cpp 
   ${CMAKE_SOURCE_DIR}/src/Server.cpp
   ${CMAKE_SOURCE_DIR}/src/Client.cpp
@@ -66,13 +72,12 @@ set_target_properties( rman_plugin
   PROPERTIES
   PREFIX ""
   OUTPUT_NAME "d_rmanConnect"
-  SUFFIX ".dpy"
-  COMPILE_FLAGS ""
+  COMPILE_FLAGS "${${RMAN}_COMPILE_FLAGS}"
 )
 
 target_link_libraries( rman_plugin
   ${Boost_LIBRARIES}
-  ${3Delight_LIBRARIES}
+  ${${RMAN}_LIBRARIES}
   Iex
   )
 

@@ -109,8 +109,8 @@ namespace rmanconnect
     };
 }
 
-/*! \mainpage RmanConnect
- *
+/*! \mainpage RmanConnect v0.2
+ * \section Overview
  * The RmanConnect project is a RenderMan Interface-compatible display driver
  * and Nuke plugin for direct rendering into the Nuke interface.
  *
@@ -130,18 +130,21 @@ namespace rmanconnect
  * Boost.Asio</a> library. The display driver will theoretically build
  * using any RenderMan-compatible renderer
  * but the included <a href="http://cmake.com"> CMake</a> build script assumes
- * you have <a href="http://3delight.com">3Delight</a> installed.
+ * you have <a href="http://3delight.com">3Delight</a> or 
+ * <a href="http://renderman.pixar.com">PRMan</a> installed.
  *
  * \section building Building
- *
  * Ensure you have <a href="http://www.thefoundry.co.uk">Nuke</a> (5.2),
- * <a href="http://www.3delight.com">3Delight</a> (9.0),
+ * either <a href="http://www.3delight.com">3Delight</a> (9.0) or 
+ * <a href="http://renderman.pixar.com">PRMan</a> (15.0),
  * <a href="http://www.boost.org/">Boost</a> (1.40) and
  * <a href="http://cmake.org/">CMake</a> (2.8) installed. You should set the
  * following environment variables before running <i>cmake</i>.
  * <ul>
+ *  <li><b>RMAN</b> - set to either <b>3Delight</b> or <b>PRMan</b>
+ *  <li><b>DELIGHT</b> - (3Delight only) the path to your 3Delight installation.
+ *  <li><b>RMANTREE</b> - (PRMan only) the path to your RPS installation.
  *  <li><b>NDK_PATH</b> - The path to your Nuke libraries.
- *  <li><b>DELIGHT</b> - The path to your 3Delight installation.
  * </ul>
  *
  * \section rman_plugin Display Driver
@@ -155,7 +158,7 @@ namespace rmanconnect
  * following in your <i>rendermn.ini</i> configuration.
  *
  * \code
- * /display/dso/RmanConnect /full/path/to/d_rmanConnect.dpy
+ * /display/dso/RmanConnect /full/path/to/d_rmanConnect
  * \endcode
  *
  * It's important that you always render images as 32-bit floating-point
@@ -166,8 +169,8 @@ namespace rmanconnect
  *
  * \code
  * # Render beauty to port 9201
- * Display "" "RmanConnect" "rgba"
- *   "float[4] quantize" [ 0 0 0 0 ]
+ * Display "rgba" "RmanConnect" "rgba"
+ *   "int[4] quantize" [ 0 0 0 0 ]
  *   "string filter" [ "gaussian" ]
  *   "float[2] filterwidth" [ 2 2 ]
  *   "string hostname" [ "localhost" ]
@@ -178,16 +181,16 @@ namespace rmanconnect
  *
  * \code
  * # Render the __Pworld AOV to port 9202
- * Display "+" "RmanConnect" "point __Pworld"
- *   "float[4] quantize" [ 0 0 0 0 ]
+ * Display "+Pworld" "RmanConnect" "point __Pworld"
+ *   "int[4] quantize" [ 0 0 0 0 ]
  *   "string filter" [ "gaussian" ]
  *   "float[2] filterwidth" [ 2 2 ]
  *   "string hostname" [ "localhost" ]
  *   "integer port" [ 9202 ]
  *
  * # Render the __Nworld AOV to port 9203
- * Display "+" "RmanConnect" "point __Nworld"
- *   "float[4] quantize" [ 0 0 0 0 ]
+ * Display "+Nworld" "RmanConnect" "point __Nworld"
+ *   "int[4] quantize" [ 0 0 0 0 ]
  *   "string filter" [ "gaussian" ]
  *   "float[2] filterwidth" [ 2 2 ]
  *   "string hostname" [ "localhost" ]

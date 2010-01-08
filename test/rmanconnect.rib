@@ -10,9 +10,8 @@ Option "limits" "integer gridsize" [ 256 ]
 Option "limits" "integer texturememory" [ 32768 ] 
 Option "limits" "integer eyesplits" [ 10 ] 
 Option "limits" "color othreshold" [ 0.99608 0.99608 0.99608 ] 
-Option "trace" "integer maxdepth" [ 1 ] 
 Option "render" "string bucketorder" [ "horizontal" ] 
-Option "searchpath" "string shader" [ "@" ] "string texture" [ "@" ] "string procedural" [ "@" ] "string archive" [ "@" ] 
+Option "searchpath" "string shader" [ "@:." ] "string texture" [ "@" ] "string procedural" [ "@" ] "string archive" [ "@" ] 
 Option "searchpath" "string procedural" [ "&:$DELIGHT/lib" ] 
 Orientation "rh" 
 ShadingInterpolation "smooth" 
@@ -25,33 +24,32 @@ FrameBegin 1
     "integer jitter" [ 1 ] 
     
   # Render beauty to port 9201
-  Display "" "RmanConnect" "rgba"
-    "float[4] quantize" [ 0 0 0 0 ]
+  Display "beauty" "RmanConnect" "rgba"
+    "int[4] quantize" [ 0 0 0 0 ]
     "string filter" [ "gaussian" ] 
     "float[2] filterwidth" [ 2 2 ]
     "string hostname" [ "localhost" ]
     "integer port" [ 9201 ]
   
   # Render the __Pworld AOV to port 9202
-  Display "+" "RmanConnect" "point __Pworld" 
-    "float[4] quantize" [ 0 0 0 0 ] 
-    "string filter" [ "gaussian" ] 
-    "float[2] filterwidth" [ 2 2 ]
-    "string hostname" [ "localhost" ] 
-    "integer port" [ 9202 ]
+  Display "+point" "RmanConnect" "point __Pworld" 
+     "int[4] quantize" [ 0 0 0 0 ] 
+     "string filter" [ "gaussian" ] 
+     "float[2] filterwidth" [ 2 2 ]
+     "string hostname" [ "localhost" ] 
+     "integer port" [ 9202 ]
   
   # Render the __Nworld AOV to port 9203
-  Display "+" "RmanConnect" "point __Nworld" 
-    "float[4] quantize" [ 0 0 0 0 ] 
-    "string filter" [ "gaussian" ] 
-    "float[2] filterwidth" [ 2 2 ] 
-    "string hostname" [ "localhost" ]
-    "integer port" [ 9203 ]
+  Display "+normal" "RmanConnect" "point __Nworld" 
+     "int[4] quantize" [ 0 0 0 0 ] 
+     "string filter" [ "gaussian" ] 
+     "float[2] filterwidth" [ 2 2 ] 
+     "string hostname" [ "localhost" ]
+     "integer port" [ 9203 ]
   
   Format 1024 778 0.9999975 
   Clipping 0.1 1e3 
   Shutter 1 1 
-  Option "shutter" "float[2] efficiency" [ 1 1 ] 
   CropWindow 0 1 0 1 
   Projection "perspective" 
     "fov" [ 54.432225 ] 
