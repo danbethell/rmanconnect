@@ -113,7 +113,7 @@ namespace rmanconnect
     };
 }
 
-/*! \mainpage RmanConnect v0.2
+/*! \mainpage RmanConnect
  * \section Overview
  * The RmanConnect project is a RenderMan Interface-compatible display driver
  * and Nuke plugin for direct rendering into the Nuke interface.
