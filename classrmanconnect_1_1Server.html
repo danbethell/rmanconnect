@@ -63,8 +63,11 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Destructor.  <a href="#a4b3aa2579cb1c8cd1d069582c14d0fa6"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classrmanconnect_1_1Server.html#a68d91fa84a24c73af9166c5b31853be5">connect</a> (int port, bool seach=false)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Connects the server to a port.  <a href="#a68d91fa84a24c73af9166c5b31853be5"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a146787e583173165696dfe8cac3ed18d"></a><!-- doxytag: member="rmanconnect::Server::accept" ref="a146787e583173165696dfe8cac3ed18d" args="()" -->
+void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classrmanconnect_1_1Server.html#a146787e583173165696dfe8cac3ed18d">accept</a> ()</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Sets up the server to accept an incoming <a class="el" href="classrmanconnect_1_1Client.html" title="Used to send an image to a Server.">Client</a> connections. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="classrmanconnect_1_1Data.html">Data</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classrmanconnect_1_1Server.html#a99610cc6a859fa77b33b7d9583619496">listen</a> ()</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Listens for incoming <a class="el" href="classrmanconnect_1_1Client.html" title="Used to send an image to a Server.">Client</a> connections.  <a href="#a99610cc6a859fa77b33b7d9583619496"></a><br/></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Listens for incoming messages from a <a class="el" href="classrmanconnect_1_1Client.html" title="Used to send an image to a Server.">Client</a>.  <a href="#a99610cc6a859fa77b33b7d9583619496"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classrmanconnect_1_1Server.html#a1a81f6a80746cae03fc549a11c70fb35">quit</a> ()</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Sends a 'quit' message to the server.  <a href="#a1a81f6a80746cae03fc549a11c70fb35"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7bd218c7c5b95c2797329165c18f4d1a"></a><!-- doxytag: member="rmanconnect::Server::isConnected" ref="a7bd218c7c5b95c2797329165c18f4d1a" args="()" -->
@@ -185,7 +188,7 @@ int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
 </div>
 <div class="memdoc">
 
-<p>Listens for incoming <a class="el" href="classrmanconnect_1_1Client.html" title="Used to send an image to a Server.">Client</a> connections. </p>
+<p>Listens for incoming messages from a <a class="el" href="classrmanconnect_1_1Client.html" title="Used to send an image to a Server.">Client</a>. </p>
 <p>This function blocks (and so may be require running on a separate thread), returning once a <a class="el" href="classrmanconnect_1_1Client.html" title="Used to send an image to a Server.">Client</a> has sent a message.</p>
 <p>The returned <a class="el" href="classrmanconnect_1_1Data.html" title="Represents image information passed from Client to Server.">Data</a> object is filled with the relevant information and passed back ready for handling by the parent application. </p>
 
@@ -230,7 +233,7 @@ int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
 </iframe>
 </div>
 
-<hr size="1"/><address style="text-align: right;"><small>Generated on Fri Jan 8 17:22:59 2010 for RmanConnect by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on Fri Jan 8 19:16:27 2010 for RmanConnect by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

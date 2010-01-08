@@ -88,27 +88,29 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00067"></a>00067         
 <a name="l00075"></a>00075         <span class="keywordtype">void</span> <a class="code" href="classrmanconnect_1_1Server.html#a68d91fa84a24c73af9166c5b31853be5" title="Connects the server to a port.">connect</a>( <span class="keywordtype">int</span> port, <span class="keywordtype">bool</span> seach=<span class="keyword">false</span> );
 <a name="l00076"></a>00076 
-<a name="l00085"></a>00085         <a class="code" href="classrmanconnect_1_1Data.html" title="Represents image information passed from Client to Server.">Data</a> <a class="code" href="classrmanconnect_1_1Server.html#a99610cc6a859fa77b33b7d9583619496" title="Listens for incoming Client connections.">listen</a>();
-<a name="l00086"></a>00086 
-<a name="l00092"></a>00092         <span class="keywordtype">void</span> <a class="code" href="classrmanconnect_1_1Server.html#a1a81f6a80746cae03fc549a11c70fb35" title="Sends a &amp;#39;quit&amp;#39; message to the server.">quit</a>();
-<a name="l00093"></a>00093 
-<a name="l00095"></a><a class="code" href="classrmanconnect_1_1Server.html#a7bd218c7c5b95c2797329165c18f4d1a">00095</a>         <span class="keywordtype">bool</span> <a class="code" href="classrmanconnect_1_1Server.html#a7bd218c7c5b95c2797329165c18f4d1a" title="Returns whether or not the server is connected to a port.">isConnected</a>(){ <span class="keywordflow">return</span> mAcceptor.is_open(); }
-<a name="l00096"></a>00096 
-<a name="l00098"></a><a class="code" href="classrmanconnect_1_1Server.html#a3bd70d606ccf535d14b81c5e6ede5797">00098</a>         <span class="keywordtype">int</span> <a class="code" href="classrmanconnect_1_1Server.html#a3bd70d606ccf535d14b81c5e6ede5797" title="Returns the port the server is currently connected to.">getPort</a>(){ <span class="keywordflow">return</span> mPort; }
-<a name="l00099"></a>00099 
-<a name="l00100"></a>00100     <span class="keyword">private</span>:
-<a name="l00101"></a>00101 
-<a name="l00102"></a>00102         <span class="comment">// the port we&apos;re listening to</span>
-<a name="l00103"></a>00103         <span class="keywordtype">int</span> mPort;
-<a name="l00104"></a>00104 
-<a name="l00105"></a>00105         <span class="comment">// boost::asio tcp stuff</span>
-<a name="l00106"></a>00106         boost::asio::io_service mIoService;
-<a name="l00107"></a>00107         boost::asio::ip::tcp::socket mSocket;
-<a name="l00108"></a>00108         boost::asio::ip::tcp::acceptor mAcceptor;
-<a name="l00109"></a>00109     };
-<a name="l00110"></a>00110 }
-<a name="l00111"></a>00111 
-<a name="l00263"></a>00263 <span class="preprocessor">#endif // RMAN_CONNECT_SERVER_H_</span>
+<a name="l00079"></a>00079         <span class="keywordtype">void</span> <a class="code" href="classrmanconnect_1_1Server.html#a146787e583173165696dfe8cac3ed18d" title="Sets up the server to accept an incoming Client connections.">accept</a>();
+<a name="l00080"></a>00080 
+<a name="l00089"></a>00089         <a class="code" href="classrmanconnect_1_1Data.html" title="Represents image information passed from Client to Server.">Data</a> <a class="code" href="classrmanconnect_1_1Server.html#a99610cc6a859fa77b33b7d9583619496" title="Listens for incoming messages from a Client.">listen</a>();
+<a name="l00090"></a>00090 
+<a name="l00096"></a>00096         <span class="keywordtype">void</span> <a class="code" href="classrmanconnect_1_1Server.html#a1a81f6a80746cae03fc549a11c70fb35" title="Sends a &amp;#39;quit&amp;#39; message to the server.">quit</a>();
+<a name="l00097"></a>00097 
+<a name="l00099"></a><a class="code" href="classrmanconnect_1_1Server.html#a7bd218c7c5b95c2797329165c18f4d1a">00099</a>         <span class="keywordtype">bool</span> <a class="code" href="classrmanconnect_1_1Server.html#a7bd218c7c5b95c2797329165c18f4d1a" title="Returns whether or not the server is connected to a port.">isConnected</a>(){ <span class="keywordflow">return</span> mAcceptor.is_open(); }
+<a name="l00100"></a>00100 
+<a name="l00102"></a><a class="code" href="classrmanconnect_1_1Server.html#a3bd70d606ccf535d14b81c5e6ede5797">00102</a>         <span class="keywordtype">int</span> <a class="code" href="classrmanconnect_1_1Server.html#a3bd70d606ccf535d14b81c5e6ede5797" title="Returns the port the server is currently connected to.">getPort</a>(){ <span class="keywordflow">return</span> mPort; }
+<a name="l00103"></a>00103 
+<a name="l00104"></a>00104     <span class="keyword">private</span>:
+<a name="l00105"></a>00105 
+<a name="l00106"></a>00106         <span class="comment">// the port we&apos;re listening to</span>
+<a name="l00107"></a>00107         <span class="keywordtype">int</span> mPort;
+<a name="l00108"></a>00108 
+<a name="l00109"></a>00109         <span class="comment">// boost::asio tcp stuff</span>
+<a name="l00110"></a>00110         boost::asio::io_service mIoService;
+<a name="l00111"></a>00111         boost::asio::ip::tcp::socket mSocket;
+<a name="l00112"></a>00112         boost::asio::ip::tcp::acceptor mAcceptor;
+<a name="l00113"></a>00113     };
+<a name="l00114"></a>00114 }
+<a name="l00115"></a>00115 
+<a name="l00267"></a>00267 <span class="preprocessor">#endif // RMAN_CONNECT_SERVER_H_</span>
 </pre></div></div>
 <!--- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -124,7 +126,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-<hr size="1"/><address style="text-align: right;"><small>Generated on Fri Jan 8 17:22:59 2010 for RmanConnect by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on Fri Jan 8 19:16:27 2010 for RmanConnect by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>
