@@ -5,14 +5,14 @@ All rights reserved.
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
 
-    * Redistributions of source code must retain the above copyright notice,
+ * Redistributions of source code must retain the above copyright notice,
     this list of conditions and the following disclaimer.
 
-    * Redistributions in binary form must reproduce the above copyright notice,
+ * Redistributions in binary form must reproduce the above copyright notice,
     this list of conditions and the following disclaimer in the documentation
     and/or other materials provided with the distribution.
 
-    * Neither the name of RmanConnect nor the names of its contributors may be
+ * Neither the name of RmanConnect nor the names of its contributors may be
     used to endorse or promote products derived from this software without
     specific prior written permission.
 
@@ -30,101 +30,103 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Client.h"
 #include <boost/lexical_cast.hpp>
-#include <OpenEXR/Iex.h>
+#include <stdexcept>
 #include <iostream>
 
 using namespace rmanconnect;
 using boost::asio::ip::tcp;
 
 Client::Client( std::string hostname, int port ) :
-        mHost( hostname ),
-        mPort( port ),
-        mImageId( -1 ),
-        mSocket( mIoService )
+        		mHost( hostname ),
+        		mPort( port ),
+        		mImageId( -1 ),
+        		mSocket( mIoService )
 {
 }
 
 void Client::connect( std::string hostname, int port )
 {
-    bool result = true;
-    tcp::resolver resolver(mIoService);
-    tcp::resolver::query query( hostname.c_str(), boost::lexical_cast<std::string>(port).c_str() );
-    tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
-    tcp::resolver::iterator end;
-    boost::system::error_code error = boost::asio::error::host_not_found;
-    while (error && endpoint_iterator != end)
-    {
-        mSocket.close();
-        mSocket.connect(*endpoint_iterator++, error);
-    }
-    if (error)
-        throw boost::system::system_error(error);
+	bool result = true;
+	tcp::resolver resolver(mIoService);
+	tcp::resolver::query query( hostname.c_str(), boost::lexical_cast<std::string>(port).c_str() );
+	tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
+	tcp::resolver::iterator end;
+	boost::system::error_code error = boost::asio::error::host_not_found;
+	while (error && endpoint_iterator != end)
+	{
+		mSocket.close();
+		mSocket.connect(*endpoint_iterator++, error);
+	}
+	if (error)
+		throw boost::system::system_error(error);
 }
 
 void Client::disconnect()
 {
-    mSocket.close();
+	mSocket.close();
 }
 
 Client::~Client()
 {
-    disconnect();
+	disconnect();
 }
 
 void Client::openImage( Data &header )
 {
-    // connect to port!
-    connect(mHost, mPort);
+	// connect to port!
+	connect(mHost, mPort);
 
-    // send image header message with image desc information
-    int key = 0;
-    boost::asio::write( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&key), sizeof(int)) );
+	// send image header message with image desc information
+	int key = 0;
+	boost::asio::write( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&key), sizeof(int)) );
 
-    // read our imageid
-    boost::asio::read( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&mImageId), sizeof(int)) );
+	// read our imageid
+	boost::asio::read( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&mImageId), sizeof(int)) );
 
-    // send our width & height
-    boost::asio::write( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&header.mWidth), sizeof(int)) );
-    boost::asio::write( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&header.mHeight), sizeof(int)) );
+	// send our width & height
+	boost::asio::write( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&header.mWidth), sizeof(int)) );
+	boost::asio::write( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&header.mHeight), sizeof(int)) );
 }
 
 void Client::sendPixels( Data &data )
 {
-    if ( mImageId<0 )
-        THROW( Iex::BaseExc, "Could not send data - image id is not valid!" );
+	if ( mImageId<0 )
+	{
+		throw std::runtime_error( "Could not send data - image id is not valid!" );
+	}
 
-    // send data for image_id
-    int key = 1;
-    boost::asio::write( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&key), sizeof(int)) );
-    boost::asio::write( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&mImageId), sizeof(int)) );
+	// send data for image_id
+	int key = 1;
+	boost::asio::write( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&key), sizeof(int)) );
+	boost::asio::write( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&mImageId), sizeof(int)) );
 
-    // send pixel data
-    int num_samples = data.mWidth * data.mHeight * data.mSpp;
-    boost::asio::write( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&data.mX), sizeof(int)) );
-    boost::asio::write( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&data.mY), sizeof(int)) );
-    boost::asio::write( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&data.mWidth), sizeof(int)) );
-    boost::asio::write( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&data.mHeight), sizeof(int)) );
-    boost::asio::write( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&data.mSpp), sizeof(int)) );
-    boost::asio::write( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&data.mpData[0]), sizeof(float)*num_samples) );
+	// send pixel data
+	int num_samples = data.mWidth * data.mHeight * data.mSpp;
+	boost::asio::write( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&data.mX), sizeof(int)) );
+	boost::asio::write( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&data.mY), sizeof(int)) );
+	boost::asio::write( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&data.mWidth), sizeof(int)) );
+	boost::asio::write( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&data.mHeight), sizeof(int)) );
+	boost::asio::write( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&data.mSpp), sizeof(int)) );
+	boost::asio::write( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&data.mpData[0]), sizeof(float)*num_samples) );
 }
 
 void Client::closeImage( )
 {
-    // send image complete message for image_id
-    int key = 2;
-    boost::asio::write( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&key), sizeof(int)) );
+	// send image complete message for image_id
+	int key = 2;
+	boost::asio::write( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&key), sizeof(int)) );
 
-    // tell the server which image we're closing
-    boost::asio::write( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&mImageId), sizeof(int)) );
+	// tell the server which image we're closing
+	boost::asio::write( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&mImageId), sizeof(int)) );
 
-    // disconnect from port!
-    disconnect();
+	// disconnect from port!
+	disconnect();
 }
 
 void Client::quit()
 {
-    connect(mHost, mPort);
-    int key = 9;
-    boost::asio::write( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&key), sizeof(int)) );
-    disconnect();
+	connect(mHost, mPort);
+	int key = 9;
+	boost::asio::write( mSocket, boost::asio::buffer(reinterpret_cast<char*>(&key), sizeof(int)) );
+	disconnect();
 }

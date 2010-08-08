@@ -33,7 +33,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <boost/lexical_cast.hpp>
 #include <vector>
 #include <iostream>
-#include <OpenEXR/Iex.h>
+#include <stdexcept>
 
 using namespace rmanconnect;
 using boost::asio::ip::tcp;
@@ -95,7 +95,9 @@ void Server::connect( int port, bool search )
         sprintf(buffer, "port: %d", start_port);
         if (search)
             sprintf(buffer, "port: %d-%d", start_port, start_port + 99);
-        THROW( Iex::BaseExc, "Failed to connect to port " << buffer );
+        std::string error = "Failed to connect to port ";
+        error += buffer;
+        throw std::runtime_error( error.c_str() );
     }
 }
 
@@ -182,7 +184,7 @@ Data Server::listen()
     catch( ... )
     {
         mSocket.close();
-        THROW( Iex::BaseExc, "Could not read from socket!" );
+        throw std::runtime_error( "Could not read from socket!" );
     }
 
     return d;
