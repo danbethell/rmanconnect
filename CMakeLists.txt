@@ -32,10 +32,6 @@ include_directories(
   ${${RMAN}_INCLUDE_DIR}
   )
 
-link_directories( 
-  ${Nuke_LIBRARY_DIR} # we add this so we can find Nuke's Iex lib
-  )
-
 #=====
 # Build the Nuke plugin
 add_library( nuke_plugin 
@@ -50,13 +46,13 @@ set_target_properties( nuke_plugin
   PROPERTIES
   PREFIX ""
   OUTPUT_NAME "nk_rmanConnect"
-  COMPILE_FLAGS "-DUSE_GLEW"
+  COMPILE_FLAGS "-DUSE_GLEW ${Nuke_COMPILE_FLAGS}"
+  LINK_FLAGS "${Nuke_LINK_FLAGS}"
   )
 
 target_link_libraries( nuke_plugin 
   ${Boost_LIBRARIES}
   ${Nuke_LIBRARIES}
-  Iex
   )
 
 #=====
@@ -78,7 +74,6 @@ set_target_properties( rman_plugin
 target_link_libraries( rman_plugin
   ${Boost_LIBRARIES}
   ${${RMAN}_LIBRARIES}
-  Iex
   )
 
 #=====

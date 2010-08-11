@@ -135,7 +135,7 @@ extern "C"
     }
 
 // some renderer-specific differences
-#ifdef PRMAN
+#ifndef DELIGHT_PRE_9.0.45
 #define DATALEN_TYPE int
 #else
 #define DATALEN_TYPE size_t
