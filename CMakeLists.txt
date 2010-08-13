@@ -71,6 +71,14 @@ set_target_properties( rman_plugin
   COMPILE_FLAGS "${${RMAN}_COMPILE_FLAGS}"
 )
 
+# PRMan requires .so even on MacOSX
+if( RMAN MATCHES "PRMan" )
+    set_target_properties( rman_plugin
+                           PROPERTIES
+                           SUFFIX ".so"
+                           )
+endif( RMAN MATCHES "PRMan" )
+
 target_link_libraries( rman_plugin
   ${Boost_LIBRARIES}
   ${${RMAN}_LIBRARIES}
